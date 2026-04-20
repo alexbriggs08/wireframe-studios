@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0ece3;
+    --accent: #c8ff00;
+    --muted: #555;
+    --border: #222;
+    --card-bg: #111;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--fg); }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,255,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+  }
+
+  @keyframes gridShift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(60px, 60px); }
+  }
+
+  .hero-corner {
+    position: absolute;
+    top: 7rem; right: 3rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    line-height: 2;
+  }
+
+  .hero-wireframe {
+    position: absolute;
+    top: 50%; right: 5%;
+    transform: translateY(-50%);
+    opacity: 0.12;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    50% { transform: translateY(-52%) translateX(-8px); }
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .hero-title {
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .hero-title span {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--fg);
+  }
+
+  .hero-desc {
+    max-width: 480px;
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--accent);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: opacity 0.2s, transform 0.2s;
+    position: relative;
+  }
+
+  .hero-cta:hover { opacity: 0.88; transform: translateY(-2px); }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem; right: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollAnim 1.8s ease-in-out infinite;
+  }
+
+  @keyframes scrollAnim {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  section {
+    padding: 6rem 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 200px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+  }
+
+  .about-body {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .about-body p + p { margin-top: 1.2rem; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  .stat-item {
+    background: var(--card-bg);
+    padding: 1.75rem;
+  }
+
+  .stat-num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .game-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+    text-decoration: none;
+    color: var(--fg);
+    display: block;
+  }
+
+  .game-card:hover { background: #161616; }
+
+  .game-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .game-card:hover::before { transform: scaleX(1); }
+
+  .game-card .view-more {
+    position: absolute;
+    bottom: 2rem; right: 2rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  .game-card:hover .view-more {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .game-card.no-link {
+    pointer-events: none;
+  }
+
+  .game-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .game-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .game-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .game-status {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .game-status.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .game-icon {
+    position: absolute;
+    bottom: 1.5rem; right: 1.5rem;
+    opacity: 0.06;
+    font-size: 5rem;
+    line-height: 1;
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .pillar {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .pillar-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .pillar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .pillar-body {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .contact-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-sub {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--fg);
+    font-weight: 600;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .contact-link:hover {
+    border-color: var(--accent);
+    background: rgba(200,255,0,0.04);
+  }
+
+  .contact-link-arrow {
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  /* DEVLOG */
+  .devlog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+  }
+
+  .devlog-header .section-label { margin-bottom: 0; }
+
+  .devlog-gh-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .devlog-gh-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  .devlog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    min-height: 160px;
+  }
+
+  .devlog-entry {
+    background: var(--card-bg);
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    text-decoration: none;
+    color: var(--fg);
+    transition: background 0.2s;
+  }
+
+  .devlog-entry:hover { background: #161616; }
+
+  .devlog-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 3px;
+  }
+
+  .devlog-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .devlog-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    width: fit-content;
+  }
+
+  .devlog-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--fg);
+  }
+
+  .devlog-body {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .devlog-arrow {
+    font-size: 16px;
+    color: var(--muted);
+    padding-top: 3px;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .devlog-entry:hover .devlog-arrow { color: var(--accent); transform: translateX(3px); }
+
+  .devlog-loading, .devlog-error, .devlog-empty {
+    background: var(--card-bg);
+    padding: 3rem 2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .devlog-loading::before {
+    content: '';
+    width: 8px; height: 8px;
+    border: 1px solid var(--accent);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .devlog-view-all {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .devlog-view-all a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .devlog-view-all a:hover { color: var(--accent); }
+
+  /* END NEW SECTIONS */
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .welcome {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+  }
+
+  .welcome::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,255,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,0,0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at center, #000 0%, #000 45%, transparent 75%);
+    -webkit-mask-image: radial-gradient(circle at center, #000 0%, #000 45%, transparent 75%);
+    animation: welcomeGrid 1.4s ease-out forwards;
+  }
+
+  @keyframes welcomeGrid {
+    from { opacity: 0; transform: scale(1.15); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .welcome.done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .welcome-stage {
+    position: relative;
+    width: min(90vw, 520px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .welcome-mark {
+    width: 140px;
+    height: 140px;
+    position: relative;
+  }
+
+  .welcome-mark svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-45deg);
+    animation: markSpin 2.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+
+  @keyframes markSpin {
+    to { transform: rotate(0deg); }
+  }
+
+  .welcome-mark svg * {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: strokeDraw 1.6s ease-out forwards;
+  }
+
+  .welcome-mark svg *:nth-child(1) { animation-delay: 0.1s; }
+  .welcome-mark svg *:nth-child(2) { animation-delay: 0.25s; }
+  .welcome-mark svg *:nth-child(3) { animation-delay: 0.4s; }
+  .welcome-mark svg *:nth-child(4) { animation-delay: 0.55s; }
+  .welcome-mark svg *:nth-child(5) { animation-delay: 0.7s; }
+  .welcome-mark svg *:nth-child(6) { animation-delay: 0.85s; }
+  .welcome-mark svg *:nth-child(7) { animation-delay: 1.0s; }
+
+  @keyframes strokeDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .welcome-core {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: coreFade 0.6s ease-out 1.8s forwards;
+  }
+
+  .welcome-core::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--accent), 0 0 40px rgba(200,255,0,0.4);
+    animation: corePulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes coreFade { to { opacity: 1; } }
+  @keyframes corePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.6); opacity: 0.6; }
+  }
+
+  .welcome-wordmark {
+    display: flex;
+    gap: 0.2em;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .welcome-wordmark span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: letterUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .welcome-wordmark span.outline {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--fg);
+  }
+
+  .welcome-wordmark span:nth-child(1) { animation-delay: 1.0s; }
+  .welcome-wordmark span:nth-child(2) { animation-delay: 1.08s; }
+  .welcome-wordmark span:nth-child(3) { animation-delay: 1.16s; }
+  .welcome-wordmark span:nth-child(4) { animation-delay: 1.24s; }
+  .welcome-wordmark span:nth-child(5) { animation-delay: 1.38s; }
+  .welcome-wordmark span:nth-child(6) { animation-delay: 1.46s; }
+  .welcome-wordmark span:nth-child(7) { animation-delay: 1.54s; }
+  .welcome-wordmark span:nth-child(8) { animation-delay: 1.62s; }
+  .welcome-wordmark span:nth-child(9) { animation-delay: 1.7s; }
+
+  @keyframes letterUp { to { opacity: 1; transform: translateY(0); } }
+
+  .welcome-meta {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    opacity: 0;
+    animation: metaFade 0.6s ease-out 1.6s forwards;
+  }
+
+  @keyframes metaFade { to { opacity: 1; } }
+
+  .welcome-log {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .welcome-log .status {
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .welcome-log .status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    animation: statusBlink 0.9s steps(2, end) infinite;
+  }
+
+  @keyframes statusBlink { 50% { opacity: 0; } }
+
+  .welcome-progress {
+    position: relative;
+    height: 1px;
+    background: var(--border);
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .welcome-progress::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: progress 2.4s cubic-bezier(0.77, 0, 0.18, 1) 0.2s forwards;
+  }
+
+  @keyframes progress { to { transform: scaleX(1); } }
+
+  .welcome-percent {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .welcome-percent b {
+    color: var(--fg);
+    font-weight: 400;
+  }
+
+  body.loading { overflow: hidden; }
+  body.loading .hero-title,
+  body.loading .hero-desc,
+  body.loading .hero-eyebrow,
+  body.loading .hero-cta,
+  body.loading nav { opacity: 0; transform: translateY(14px); }
+
+  nav, .hero-title, .hero-desc, .hero-eyebrow, .hero-cta {
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .welcome, .welcome *, .welcome::before { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1rem; }
+    .hero { padding: 0 1.5rem 3rem; }
+    .hero-corner { display: none; }
+    .hero-wireframe { opacity: 0.06; right: -5%; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .games-grid { grid-template-columns: 1fr; }
+    .pillars { grid-template-columns: 1fr; }
+    .devlog-entry { grid-template-columns: 1fr; gap: 0.75rem; }
+    .devlog-arrow { display: none; }
+    .devlog-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body class="loading">
+
+<div class="welcome" id="welcome" aria-hidden="true">
+  <div class="welcome-stage">
+    <div class="welcome-mark">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="100" height="100"/>
+        <rect x="30" y="30" width="60" height="60"/>
+        <circle cx="60" cy="60" r="42"/>
+        <circle cx="60" cy="60" r="22"/>
+        <line x1="10" y1="10" x2="110" y2="110"/>
+        <line x1="110" y1="10" x2="10" y2="110"/>
+        <line x1="60" y1="0" x2="60" y2="120"/>
+      </svg>
+      <div class="welcome-core"></div>
+    </div>
+    <div class="welcome-wordmark" aria-label="Wireframe">
+      <span>W</span><span>I</span><span>R</span><span>E</span><span class="outline">F</span><span class="outline">R</span><span class="outline">A</span><span class="outline">M</span><span class="outline">E</span>
+    </div>
+    <div class="welcome-meta">
+      <div class="welcome-log">
+        <span>SYS / Boot Sequence</span>
+        <span class="status" id="welcomeStatus">Initializing</span>
+      </div>
+      <div class="welcome-progress"></div>
+      <div class="welcome-percent"><b id="welcomePercent">000</b> / 100</div>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">WF / Studios</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#games">Games</a></li>
+    <li><a href="#devlog">Dev Log</a></li>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-corner">Est. 2025<br>Independent Studio<br>Built from scratch</div>
+  <svg class="hero-wireframe" width="420" height="420" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="20" width="280" height="280" stroke="#c8ff00" stroke-width="1"/>
+    <rect x="60" y="60" width="200" height="200" stroke="#c8ff00" stroke-width="0.5"/>
+    <rect x="100" y="100" width="120" height="120" stroke="#c8ff00" stroke-width="0.5"/>
+    <line x1="20" y1="20" x2="300" y2="300" stroke="#c8ff00" stroke-width="0.5"/>
+    <line x1="300" y1="20" x2="20" y2="300" stroke="#c8ff00" stroke-width="0.5"/>
+    <circle cx="160" cy="160" r="100" stroke="#c8ff00" stroke-width="0.5"/>
+    <circle cx="160" cy="160" r="60" stroke="#c8ff00" stroke-width="0.5"/>
+    <circle cx="160" cy="160" r="20" stroke="#c8ff00" stroke-width="1"/>
+    <line x1="160" y1="20" x2="160" y2="300" stroke="#c8ff00" stroke-width="0.5" stroke-dasharray="4 4"/>
+    <line x1="20" y1="160" x2="300" y2="160" stroke="#c8ff00" stroke-width="0.5" stroke-dasharray="4 4"/>
+  </svg>
+  <div class="hero-eyebrow">Independent Game Studio</div>
+  <h1 class="hero-title">Wire<span>Frame</span></h1>
+  <p class="hero-desc">Games built from first principles — crafted with precision, shipped with purpose.</p>
+  <a href="#games" class="hero-cta">View Our Games &rarr;</a>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-label">About the Studio</div>
+  <div class="about-grid fade-in">
+    <div>
+      <h2 class="about-title">Built from<br>the ground up.</h2>
+      <div class="stat-grid">
+        <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Projects in dev</div></div>
+        <div class="stat-item"><div class="stat-num">C++</div><div class="stat-label">Core language</div></div>
+        <div class="stat-item"><div class="stat-num">S2</div><div class="stat-label">Source 2 Engine</div></div>
+        <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Independent</div></div>
+      </div>
+    </div>
+    <div class="about-body">
+      <p>Wireframe Studios is an independent game development studio built on a simple belief: the best games come from developers who truly understand their craft at every level.</p>
+      <p>We don't cut corners. Every system, every mechanic, every line of code is written with the intention of understanding — not just getting it to work. That foundation shows in the final product.</p>
+      <p>Our games are built to last. Not prototypes, not experiments — finished, polished experiences that we're proud to put our name on.</p>
+    </div>
+  </div>
+</section>
+
+<section id="games">
+  <div class="section-label">Our Games</div>
+  <div class="games-grid fade-in">
+    <a class="game-card" href="games/protocol.html">
+      <div class="game-tag">Project 01 &mdash; C++</div>
+      <div class="game-title">Protocol</div>
+      <div class="game-desc">Built entirely from scratch in C++ — a deep dive into the raw mechanics of game development from the ground up.</div>
+      <div class="game-status active">In Development</div>
+      <div class="view-more">View Game &rarr;</div>
+      <div class="game-icon">&#9672;</div>
+    </a>
+    <a class="game-card" href="games/untitled-ii.html">
+      <div class="game-tag">Project 02 &mdash; Source 2</div>
+      <div class="game-title">Untitled Game II</div>
+      <div class="game-desc">Built on s&amp;box / Source 2 Engine — exploring modern game engines while deepening our craft.</div>
+      <div class="game-status active">Planned</div>
+      <div class="view-more">View Game &rarr;</div>
+      <div class="game-icon">&#9671;</div>
+    </a>
+    <div class="game-card no-link">
+      <div class="game-tag">Future</div>
+      <div class="game-title">Coming Soon</div>
+      <div class="game-desc">The story is just beginning. More titles are in the vision — each one a step further in craft, ambition, and execution.</div>
+      <div class="game-status">Planned</div>
+      <div class="game-icon">&#9675;</div>
+    </div>
+  </div>
+</section>
+
+<section id="philosophy">
+  <div class="section-label">Our Philosophy</div>
+  <div class="pillars fade-in">
+    <div class="pillar">
+      <div class="pillar-num">01</div>
+      <div class="pillar-title">First Principles</div>
+      <div class="pillar-body">We learn by building from scratch. Understanding the fundamentals isn't just a method — it's our identity as developers.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">02</div>
+      <div class="pillar-title">Finish What You Start</div>
+      <div class="pillar-body">Every project we begin is built to ship. No throw-away experiments — only finished work we're proud to put our name on.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">03</div>
+      <div class="pillar-title">Craft Over Speed</div>
+      <div class="pillar-body">We move deliberately. A game worth playing takes time to get right, and we'd rather build one great thing than ten rushed ones.</div>
+    </div>
+  </div>
+</section>
+
+<section id="devlog">
+  <div class="devlog-header">
+    <div class="section-label">Dev Log</div>
+    <a class="devlog-gh-link" href="https://github.com/alexbriggs08/Protocol/releases" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+  <div class="devlog-list fade-in" id="devlogList">
+    <div class="devlog-loading">Fetching latest updates</div>
+  </div>
+  <div class="devlog-view-all">
+    <a href="https://github.com/alexbriggs08/Protocol/releases" target="_blank" rel="noopener">All releases on GitHub &rarr;</a>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-label">Get in Touch</div>
+  <div class="contact-inner fade-in">
+    <div>
+      <h2 class="contact-title">Let's build something together.</h2>
+      <p class="contact-sub">Whether you're a player, a collaborator, or just curious — we'd love to hear from you.</p>
+    </div>
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:hello@wireframestudios.com"><span>Email Us</span><span class="contact-link-arrow">&rarr;</span></a>
+      <a class="contact-link" href="https://twitter.com/wireframestudios" target="_blank" rel="noopener"><span>Follow on Twitter / X</span><span class="contact-link-arrow">&rarr;</span></a>
+      <a class="contact-link" href="#" target="_blank" rel="noopener"><span>Join our Discord</span><span class="contact-link-arrow">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Wireframe Studios &mdash; Est. 2025</div>
+  <div class="footer-copy">&copy; 2025 Wireframe Studios. All rights reserved.</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // ── Dev Log: fetch GitHub Releases ──────────────────────────────────────
+  // UPDATE THIS: replace with your actual GitHub username/repo
+  const GITHUB_REPO = 'alexbriggs08/Protocol';
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function stripMarkdown(md) {
+    return (md || '')
+      .replace(/#{1,6}\s?/g, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/`(.*?)`/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\n+/g, ' ')
+      .trim();
+  }
+
+  async function loadDevLog() {
+    const list = document.getElementById('devlogList');
+    if (!list) return;
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=5`,
+        { headers: { Accept: 'application/vnd.github+json' } }
+      );
+      if (!res.ok) throw new Error(res.status);
+      const releases = await res.json();
+      if (!releases.length) {
+        list.innerHTML = '<div class="devlog-empty">No releases yet — check back soon.</div>';
+        return;
+      }
+      list.innerHTML = releases.map(r => {
+        const body = stripMarkdown(r.body).slice(0, 180) + (r.body && r.body.length > 180 ? '…' : '');
+        return `<a class="devlog-entry" href="${r.html_url}" target="_blank" rel="noopener">
+          <div class="devlog-meta">
+            <div class="devlog-date">${formatDate(r.published_at)}</div>
+            <div class="devlog-tag">${r.tag_name}</div>
+          </div>
+          <div>
+            <div class="devlog-title">${r.name || r.tag_name}</div>
+            ${body ? `<div class="devlog-body">${body}</div>` : ''}
+          </div>
+          <div class="devlog-arrow">&#8594;</div>
+        </a>`;
+      }).join('');
+    } catch (err) {
+      list.innerHTML = `<div class="devlog-error">
+        Couldn't load releases right now —
+        <a href="https://github.com/${GITHUB_REPO}/releases" target="_blank" rel="noopener" style="color:var(--accent);">view them on GitHub</a>.
+      </div>`;
+    }
+  }
+
+  loadDevLog();
+
+  (function welcomeAnim() {
+    const overlay = document.getElementById('welcome');
+    const pct = document.getElementById('welcomePercent');
+    const status = document.getElementById('welcomeStatus');
+    if (!overlay) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const duration = prefersReduced ? 300 : 2600;
+    const stages = [[0.00,'Initializing'],[0.25,'Loading modules'],[0.55,'Compiling shaders'],[0.80,'Rendering wireframe'],[0.97,'Ready']];
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const value = Math.round(eased * 100);
+      pct.textContent = String(value).padStart(3, '0');
+      for (let i = stages.length - 1; i >= 0; i--) {
+        if (eased >= stages[i][0]) { if (status.textContent !== stages[i][1]) status.textContent = stages[i][1]; break; }
+      }
+      if (t < 1) { requestAnimationFrame(frame); }
+      else {
+        pct.textContent = '100';
+        setTimeout(() => { overlay.classList.add('done'); document.body.classList.remove('loading'); }, 250);
+        setTimeout(() => overlay.remove(), 1400);
+      }
+    }
+    requestAnimationFrame(frame);
+  })();
+</script>
+<script src="transition.js"></script>
+</body>
+</html>
