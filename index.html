@@ -1311,37 +1311,37 @@
 
   loadDevLog();
 
-  // ── Announcements: fetch from Google Groups RSS ───────────────────────────
-  // UPDATE THIS: replace 'wireframestudios' with your actual Google Group name.
-  // Your group must be public. Create one at groups.google.com.
-  const GOOGLE_GROUP = 'wireframestudios';
+  // ── Announcements: fetch GitHub Discussions Atom feed ────────────────────
+  const DISCUSSIONS_URL = 'https://github.com/alexbriggs08/wireframe-studios/discussions.atom';
 
   async function loadAnnouncements() {
     const list = document.getElementById('announceList');
     if (!list) return;
-    const rssUrl = `https://groups.google.com/g/${GOOGLE_GROUP}/feed/rss_v2_0_topics.xml`;
     try {
       const res = await fetch(
-        `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=3`
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(DISCUSSIONS_URL)}`
       );
       if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
-      if (data.status !== 'ok' || !data.items.length) {
+      const xml = await res.text();
+      const doc = new DOMParser().parseFromString(xml, 'application/xml');
+      const entries = Array.from(doc.querySelectorAll('entry')).slice(0, 3);
+      if (!entries.length) {
         list.innerHTML = '<div class="devlog-empty">No announcements yet — check back soon.</div>';
         return;
       }
-      list.innerHTML = data.items.map(item => {
-        const date = new Date(item.pubDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-        const body = item.description
-          ? item.description.replace(/<[^>]+>/g, '').trim().slice(0, 180) + (item.description.length > 180 ? '…' : '')
-          : '';
-        return `<a class="announce-entry devlog-entry" href="${item.link}" target="_blank" rel="noopener">
+      list.innerHTML = entries.map(e => {
+        const title = e.querySelector('title')?.textContent || 'Untitled';
+        const link = e.querySelector('link')?.getAttribute('href') || '#';
+        const date = new Date(e.querySelector('published')?.textContent).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const raw = e.querySelector('content')?.textContent || '';
+        const body = raw.replace(/<[^>]+>/g, '').trim().slice(0, 180) + (raw.length > 180 ? '…' : '');
+        return `<a class="announce-entry devlog-entry" href="${link}" target="_blank" rel="noopener">
           <div class="devlog-meta">
             <div class="devlog-date">${date}</div>
             <div class="devlog-tag">Announcement</div>
           </div>
           <div>
-            <div class="devlog-title">${item.title}</div>
+            <div class="devlog-title">${title}</div>
             ${body ? `<div class="devlog-body">${body}</div>` : ''}
           </div>
           <div class="devlog-arrow">&#8594;</div>
@@ -1350,7 +1350,7 @@
     } catch (err) {
       list.innerHTML = `<div class="devlog-error">
         Couldn't load announcements right now —
-        <a href="https://groups.google.com/g/${GOOGLE_GROUP}" target="_blank" rel="noopener" style="color:var(--accent);">view the group</a>.
+        <a href="https://github.com/alexbriggs08/wireframe-studios/discussions" target="_blank" rel="noopener" style="color:var(--accent);">view on GitHub</a>.
       </div>`;
     }
   }
