@@ -608,6 +608,164 @@
 
   .devlog-view-all a:hover { color: var(--accent); }
 
+  /* ANNOUNCEMENTS */
+  .announce-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+  }
+
+  .announce-header .section-label { margin-bottom: 0; }
+
+  .announce-gh-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .announce-gh-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  .announce-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    min-height: 120px;
+  }
+
+  .announce-entry {
+    background: var(--card-bg);
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    text-decoration: none;
+    color: var(--fg);
+    transition: background 0.2s;
+  }
+
+  .announce-entry:hover { background: #161616; }
+
+  .announce-view-all {
+    margin-top: 2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .announce-view-all a {
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .announce-view-all a:hover { color: var(--accent); }
+
+  /* NEWSLETTER */
+  .newsletter-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .newsletter-title {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .newsletter-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .newsletter-action {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .newsletter-form {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+
+  .newsletter-form:focus-within { border-color: var(--accent); }
+
+  .newsletter-input {
+    flex: 1;
+    background: var(--card-bg);
+    border: none;
+    outline: none;
+    padding: 1rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--fg);
+  }
+
+  .newsletter-input::placeholder { color: var(--muted); }
+
+  .newsletter-submit {
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+
+  .newsletter-submit:hover { background: #b8ef00; }
+  .newsletter-submit:disabled { opacity: 0.5; cursor: default; }
+
+  .newsletter-success {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 1rem 0;
+    display: none;
+  }
+
+  .newsletter-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
   /* END NEW SECTIONS */
 
   footer {
@@ -926,6 +1084,7 @@
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#games">Games</a></li>
+    <li><a href="#announcements">Announcements</a></li>
     <li><a href="#devlog">Dev Log</a></li>
     <li><a href="#philosophy">Philosophy</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -980,10 +1139,17 @@
 <section id="games">
   <div class="section-label">Our Games</div>
   <div class="games-grid fade-in">
+    <div class="game-card no-link">
+      <div class="game-tag">In Development</div>
+      <div class="game-title">Announcement Soon</div>
+      <div class="game-desc">Something new is in the works. An announcement is coming — stay tuned and subscribe to our mailing list for the reveal.</div>
+      <div class="game-status active">In Development</div>
+      <div class="game-icon">&#9675;</div>
+    </div>
     <a class="game-card" href="games/protocol.html">
       <div class="game-tag">Project 01 &mdash; C++</div>
       <div class="game-title">Protocol</div>
-      <div class="game-desc">Built entirely from scratch in C++ — a deep dive into the raw mechanics of game development from the ground up.</div>
+      <div class="game-desc">Built in C++ with RayLib — a focused deep dive into game architecture, systems design, and shipping a finished product.</div>
       <div class="game-status active">In Development</div>
       <div class="view-more">View Game &rarr;</div>
       <div class="game-icon">&#9672;</div>
@@ -996,12 +1162,30 @@
       <div class="view-more">View Game &rarr;</div>
       <div class="game-icon">&#9671;</div>
     </a>
-    <div class="game-card no-link">
-      <div class="game-tag">Future</div>
-      <div class="game-title">Coming Soon</div>
-      <div class="game-desc">The story is just beginning. More titles are in the vision — each one a step further in craft, ambition, and execution.</div>
-      <div class="game-status">Planned</div>
-      <div class="game-icon">&#9675;</div>
+  </div>
+</section>
+
+<section id="announcements">
+  <div class="section-label">Announcements</div>
+  <div class="announce-list fade-in" id="announceList">
+    <div class="devlog-loading">Fetching latest announcements</div>
+  </div>
+  <div class="announce-view-all">
+    <a href="announcements.html">All announcements &rarr;</a>
+  </div>
+
+  <div class="newsletter-inner fade-in">
+    <div>
+      <div class="newsletter-title">Stay in the Loop</div>
+      <p class="newsletter-sub">Get studio updates, game announcements, and dev insights delivered directly to your inbox. No spam — just signal.</p>
+    </div>
+    <div class="newsletter-action">
+      <form class="newsletter-form" id="newsletterForm">
+        <input class="newsletter-input" type="email" placeholder="your@email.com" required autocomplete="email">
+        <button class="newsletter-submit" type="submit">Subscribe &rarr;</button>
+      </form>
+      <div class="newsletter-success" id="newsletterSuccess">&#10003; You're subscribed — welcome aboard.</div>
+      <div class="newsletter-note">Powered by Google Groups &mdash; unsubscribe any time</div>
     </div>
   </div>
 </section>
@@ -1126,6 +1310,78 @@
   }
 
   loadDevLog();
+
+  // ── Announcements: fetch from Google Groups RSS ───────────────────────────
+  // UPDATE THIS: replace 'wireframestudios' with your actual Google Group name.
+  // Your group must be public. Create one at groups.google.com.
+  const GOOGLE_GROUP = 'wireframestudios';
+
+  async function loadAnnouncements() {
+    const list = document.getElementById('announceList');
+    if (!list) return;
+    const rssUrl = `https://groups.google.com/g/${GOOGLE_GROUP}/feed/rss_v2_0_topics.xml`;
+    try {
+      const res = await fetch(
+        `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=3`
+      );
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      if (data.status !== 'ok' || !data.items.length) {
+        list.innerHTML = '<div class="devlog-empty">No announcements yet — check back soon.</div>';
+        return;
+      }
+      list.innerHTML = data.items.map(item => {
+        const date = new Date(item.pubDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const body = item.description
+          ? item.description.replace(/<[^>]+>/g, '').trim().slice(0, 180) + (item.description.length > 180 ? '…' : '')
+          : '';
+        return `<a class="announce-entry devlog-entry" href="${item.link}" target="_blank" rel="noopener">
+          <div class="devlog-meta">
+            <div class="devlog-date">${date}</div>
+            <div class="devlog-tag">Announcement</div>
+          </div>
+          <div>
+            <div class="devlog-title">${item.title}</div>
+            ${body ? `<div class="devlog-body">${body}</div>` : ''}
+          </div>
+          <div class="devlog-arrow">&#8594;</div>
+        </a>`;
+      }).join('');
+    } catch (err) {
+      list.innerHTML = `<div class="devlog-error">
+        Couldn't load announcements right now —
+        <a href="https://groups.google.com/g/${GOOGLE_GROUP}" target="_blank" rel="noopener" style="color:var(--accent);">view the group</a>.
+      </div>`;
+    }
+  }
+
+  loadAnnouncements();
+
+  // ── Newsletter sign-up: submits to Google Form ────────────────────────────
+  // HOW TO SET UP:
+  // 1. Create a Google Form with a single "Email" field at forms.google.com
+  // 2. Click the 3-dot menu → Get pre-filled link, fill in a test email, copy the URL
+  // 3. From that URL extract: the FORM_ID (long string in the path) and entry.XXXXXXX (the field name)
+  // 4. Update GOOGLE_FORM_ACTION and GOOGLE_FORM_EMAIL_ENTRY below.
+  const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSffVH2Cnlgtkz74hCpxY2iiepEv8kJN2I4ht2X_7BxcfhGtjQ/formResponse';
+  const GOOGLE_FORM_EMAIL_ENTRY = 'entry.1400290315';
+
+  document.getElementById('newsletterForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('.newsletter-submit');
+    const success = document.getElementById('newsletterSuccess');
+    const email = form.querySelector('input[type="email"]').value;
+    btn.disabled = true;
+    btn.textContent = 'Subscribing…';
+    try {
+      const body = new FormData();
+      body.append(GOOGLE_FORM_EMAIL_ENTRY, email);
+      await fetch(GOOGLE_FORM_ACTION, { method: 'POST', body, mode: 'no-cors' });
+    } catch (_) {}
+    form.style.display = 'none';
+    success.style.display = 'block';
+  });
 
   (function welcomeAnim() {
     const overlay = document.getElementById('welcome');

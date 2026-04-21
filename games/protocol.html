@@ -597,8 +597,8 @@
     <div>
       <div class="section-label">About the Game</div>
       <div class="body-text">
-        <p>Protocol is the first game from Wireframe Studios, and it exists for a specific reason: to build a complete game from <strong>absolute first principles</strong>. No engine abstractions. No pre-built physics systems. Every loop, every collision, every frame rendered by hand.</p>
-        <p>The goal isn't to reinvent the wheel for its own sake — it's to understand the wheel deeply enough that we could build a better one. This project is as much about mastering C++ and game architecture as it is about shipping a finished product.</p>
+        <p>Protocol is the first game from Wireframe Studios, built in <strong>C++ with RayLib</strong>. RayLib gives us a lean, minimal foundation — window management, rendering, input, and audio — without hiding the mechanics underneath. Everything else is ours to design and build.</p>
+        <p>The goal is to ship a complete, polished game while truly understanding every system in it. This project is as much about mastering C++ and game architecture as it is about putting something finished out into the world.</p>
         <p>The result is a game with an unusual level of intentionality behind every mechanic. When you play Protocol, you're playing something built by a developer who understands exactly why every system works the way it does.</p>
       </div>
 
@@ -662,7 +662,7 @@
             <div class="perk-icon">&#9670;</div>
             <div>
               <div class="perk-title">Learn from the code</div>
-              <div class="perk-body">If you're learning C++ or game development, this codebase is a living resource — a real game being built from scratch, in the open.</div>
+              <div class="perk-body">If you're learning C++ or game development with RayLib, this codebase is a living resource — a real game being built in the open.</div>
             </div>
           </div>
           <div class="opensource-perk">
@@ -684,33 +684,33 @@
         <div class="features-grid">
           <div class="feature-item">
             <div class="feature-num">SYS / 01</div>
-            <div class="feature-title">Custom Renderer</div>
-            <div class="feature-body">Rendering pipeline written from scratch — no engine abstraction between code and pixels.</div>
+            <div class="feature-title">Rendering Pipeline</div>
+            <div class="feature-body">RayLib-powered rendering with custom layering, camera control, and scene management built on top.</div>
           </div>
           <div class="feature-item">
             <div class="feature-num">SYS / 02</div>
-            <div class="feature-title">Physics Engine</div>
-            <div class="feature-body">Hand-rolled collision detection and response. Every bounce and slide calculated explicitly.</div>
+            <div class="feature-title">Physics &amp; Collision</div>
+            <div class="feature-body">Custom collision logic and physics response layered over RayLib's primitives for precise, game-specific behaviour.</div>
           </div>
           <div class="feature-item">
             <div class="feature-num">SYS / 03</div>
             <div class="feature-title">Entity System</div>
-            <div class="feature-body">Custom entity-component architecture designed for performance and clarity.</div>
+            <div class="feature-body">Hand-written entity-component architecture keeping game objects modular, composable, and easy to reason about.</div>
           </div>
           <div class="feature-item">
             <div class="feature-num">SYS / 04</div>
-            <div class="feature-title">Input Handling</div>
-            <div class="feature-body">Low-latency input system built directly on platform APIs for precise control.</div>
+            <div class="feature-title">Input Manager</div>
+            <div class="feature-body">Unified input abstraction on top of RayLib — keyboard, mouse, and gamepad mapped to clean game actions.</div>
           </div>
           <div class="feature-item">
             <div class="feature-num">SYS / 05</div>
-            <div class="feature-title">Audio Engine</div>
-            <div class="feature-body">Lightweight audio mixer supporting positional sound and layered effects.</div>
+            <div class="feature-title">Audio System</div>
+            <div class="feature-body">Layered audio management via RayLib's audio module — spatial sound, dynamic mixing, and event-driven playback.</div>
           </div>
           <div class="feature-item">
             <div class="feature-num">SYS / 06</div>
-            <div class="feature-title">Memory Manager</div>
-            <div class="feature-body">Manual memory management with custom allocators — no garbage collection crutches.</div>
+            <div class="feature-title">Game State Manager</div>
+            <div class="feature-body">Stack-based state machine controlling scenes, menus, and transitions — clean separation between game phases.</div>
           </div>
         </div>
       </div>
@@ -722,14 +722,14 @@
             <div class="devlog-date">2025 — Entry 001</div>
             <div>
               <div class="devlog-title">Project start — setting up the build system</div>
-              <div class="devlog-body">First commit. Got a window opening and a basic game loop running. Chose SDL2 for windowing and input only — everything else is ours to write.</div>
+              <div class="devlog-body">First commit. Got a window opening and a basic game loop running with RayLib. Build system wired up, project structure locked in.</div>
             </div>
           </div>
           <div class="devlog-entry">
             <div class="devlog-date">2025 — Entry 002</div>
             <div>
-              <div class="devlog-title">First triangle on screen</div>
-              <div class="devlog-body">Custom software renderer is rendering geometry. Nothing fancy yet — but those three vertices are entirely our work, no magic in between.</div>
+              <div class="devlog-title">First geometry on screen</div>
+              <div class="devlog-body">RayLib rendering pipeline up and running. Started wiring the entity system — first game objects appearing in world space.</div>
             </div>
           </div>
           <div class="devlog-entry">
@@ -758,7 +758,7 @@
       </div>
       <div class="sidebar-item">
         <div class="sidebar-label">Engine</div>
-        <div class="sidebar-value">None (From Scratch)</div>
+        <div class="sidebar-value">RayLib</div>
       </div>
       <div class="sidebar-item">
         <div class="sidebar-label">Language</div>
