@@ -9,12 +9,13 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0a0a0a;
+    --bg: #080808;
     --fg: #f0ece3;
     --accent: #c8ff00;
-    --muted: #555;
-    --border: #222;
-    --card-bg: #111;
+    --muted: #4a4a4a;
+    --muted-hi: #777;
+    --border: #1a1a1a;
+    --card-bg: #0e0e0e;
     --mono: 'Space Mono', monospace;
     --sans: 'Syne', sans-serif;
   }
@@ -26,8 +27,72 @@
     color: var(--fg);
     font-family: var(--sans);
     overflow-x: hidden;
+    cursor: none;
   }
 
+  /* ── Custom Cursor ── */
+  #cursor-dot {
+    position: fixed;
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    top: 0; left: 0;
+    will-change: transform;
+    transition: width 0.18s, height 0.18s, opacity 0.2s, background 0.2s;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 34px; height: 34px;
+    border: 1.5px solid rgba(200,255,0,0.45);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    top: 0; left: 0;
+    will-change: transform;
+    transition: width 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                height 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                border-color 0.2s, opacity 0.25s, border-radius 0.22s;
+  }
+  #cursor-label {
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 99997;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.18s;
+    will-change: transform;
+  }
+  body.cursor-hover #cursor-dot { width: 6px; height: 6px; }
+  body.cursor-hover #cursor-ring {
+    width: 52px; height: 52px;
+    border-color: rgba(200,255,0,0.75);
+    border-radius: 6px;
+  }
+  body.cursor-hover #cursor-label { opacity: 1; }
+  body.cursor-down #cursor-dot { width: 3px; height: 3px; background: #fff; }
+  body.cursor-down #cursor-ring {
+    width: 24px; height: 24px;
+    border-color: rgba(200,255,0,0.9);
+    border-radius: 50%;
+  }
+  body.cursor-text #cursor-ring {
+    width: 3px; height: 28px;
+    border-radius: 2px;
+    border-color: var(--accent);
+    border-width: 0;
+    background: var(--accent);
+  }
+  a, button, [data-cursor], input, textarea { cursor: none; }
+
+  /* ── Nav ── */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -37,213 +102,256 @@
     justify-content: space-between;
     padding: 1.25rem 3rem;
     border-bottom: 1px solid var(--border);
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(8px);
+    background: rgba(8,8,8,0.94);
+    backdrop-filter: blur(12px);
   }
-
   .nav-logo {
     font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: 0.12em;
+    font-size: 12px;
+    letter-spacing: 0.14em;
     color: var(--accent);
     text-transform: uppercase;
     text-decoration: none;
   }
-
-  .nav-links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-  }
-
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
   .nav-links a {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--muted-hi);
     text-decoration: none;
     transition: color 0.2s;
+    position: relative;
+    padding-bottom: 2px;
   }
-
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.76, 0, 0.24, 1);
+  }
   .nav-links a:hover { color: var(--fg); }
+  .nav-links a:hover::after { transform: scaleX(1); }
 
+  /* ── Hero ── */
   .hero {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 0 3rem 4rem;
+    padding: 0 3rem 4.5rem;
     position: relative;
     overflow: hidden;
   }
 
   .hero-grid {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background-image:
-      linear-gradient(rgba(200,255,0,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(200,255,0,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: gridShift 20s linear infinite;
+      linear-gradient(rgba(200,255,0,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,0,0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    animation: gridShift 24s linear infinite;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 20%, #000 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 20%, #000 70%, transparent 100%);
   }
-
   @keyframes gridShift {
-    from { transform: translate(0, 0); }
-    to { transform: translate(60px, 60px); }
+    from { background-position: 0 0; }
+    to { background-position: 56px 56px; }
   }
 
   .hero-corner {
     position: absolute;
     top: 7rem; right: 3rem;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted);
     text-align: right;
-    line-height: 2;
+    line-height: 2.2;
+    letter-spacing: 0.1em;
   }
+  .hero-corner span { color: var(--accent); }
 
+  /* Animated wireframe in hero */
   .hero-wireframe {
     position: absolute;
-    top: 50%; right: 5%;
+    top: 50%; right: 4%;
     transform: translateY(-50%);
-    opacity: 0.12;
-    animation: float 6s ease-in-out infinite;
+    opacity: 0.13;
+    animation: heroFloat 8s ease-in-out infinite;
+    pointer-events: none;
   }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(-50%) translateX(0); }
-    50% { transform: translateY(-52%) translateX(-8px); }
+  @keyframes heroFloat {
+    0%, 100% { transform: translateY(-50%) rotate(0deg); }
+    33% { transform: translateY(-52%) rotate(0.8deg); }
+    66% { transform: translateY(-49%) rotate(-0.5deg); }
+  }
+  .hero-wireframe .ring-1 { animation: ringPulse1 4s ease-in-out infinite; }
+  .hero-wireframe .ring-2 { animation: ringPulse2 4s ease-in-out infinite 0.5s; }
+  @keyframes ringPulse1 {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  @keyframes ringPulse2 {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
   }
 
   .hero-eyebrow {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--accent);
     margin-bottom: 1.5rem;
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--accent);
+    flex-shrink: 0;
   }
 
   .hero-title {
-    font-size: clamp(4rem, 10vw, 9rem);
+    font-size: clamp(4.5rem, 11vw, 10rem);
     font-weight: 800;
-    line-height: 0.9;
-    letter-spacing: -0.03em;
-    margin-bottom: 2rem;
-    position: relative;
-  }
-
-  .hero-title span {
-    display: block;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--fg);
-  }
-
-  .hero-desc {
-    max-width: 480px;
-    font-size: 16px;
-    color: var(--muted);
-    line-height: 1.7;
+    line-height: 0.88;
+    letter-spacing: -0.035em;
     margin-bottom: 2.5rem;
     position: relative;
   }
+  .hero-title span {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240,236,227,0.35);
+  }
+
+  .hero-desc {
+    max-width: 440px;
+    font-size: 15px;
+    color: var(--muted-hi);
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    position: relative;
+    text-wrap: pretty;
+  }
+
+  .hero-actions { display: flex; align-items: center; gap: 1.5rem; position: relative; }
 
   .hero-cta {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: var(--accent);
     color: #000;
     font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 14px 28px;
+    padding: 13px 24px;
     text-decoration: none;
     font-weight: 700;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: background 0.2s, transform 0.2s;
     position: relative;
+    overflow: hidden;
   }
-
-  .hero-cta:hover { opacity: 0.88; transform: translateY(-2px); }
-
-  .scroll-indicator {
+  .hero-cta::after {
+    content: '';
     position: absolute;
-    bottom: 2rem; right: 3rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-105%);
+    transition: transform 0.35s cubic-bezier(0.76,0,0.24,1);
+  }
+  .hero-cta:hover::after { transform: translateX(0); }
+  .hero-cta:hover { transform: translateY(-2px); }
+
+  .hero-cta-ghost {
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    color: var(--muted-hi);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .hero-cta-ghost:hover { color: var(--fg); }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2.5rem; right: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     color: var(--muted);
   }
-
   .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, var(--muted), transparent);
-    animation: scrollAnim 1.8s ease-in-out infinite;
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollAnim 2s ease-in-out infinite;
   }
-
   @keyframes scrollAnim {
-    0% { transform: scaleY(0); transform-origin: top; }
-    50% { transform: scaleY(1); transform-origin: top; }
+    0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
     51% { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.3; }
   }
 
-  section {
-    padding: 6rem 3rem;
-    border-top: 1px solid var(--border);
-  }
+  /* ── Sections ── */
+  section { padding: 7rem 3rem; border-top: 1px solid var(--border); }
 
   .section-label {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 3rem;
+    margin-bottom: 3.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
   }
-
   .section-label::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--border);
-    max-width: 200px;
+    background: linear-gradient(to right, var(--border), transparent);
+    max-width: 240px;
   }
 
+  /* ── About ── */
   .about-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    gap: 5rem;
     align-items: start;
   }
-
   .about-title {
     font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: 800;
     line-height: 1.05;
-    letter-spacing: -0.02em;
-    margin-bottom: 2rem;
+    letter-spacing: -0.025em;
+    margin-bottom: 2.5rem;
   }
-
-  .about-body {
-    font-size: 16px;
-    color: var(--muted);
-    line-height: 1.8;
-  }
-
-  .about-body p + p { margin-top: 1.2rem; }
+  .about-body { font-size: 15px; color: var(--muted-hi); line-height: 1.85; }
+  .about-body p + p { margin-top: 1.3rem; }
 
   .stat-grid {
     display: grid;
@@ -251,33 +359,47 @@
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
-    margin-top: 2rem;
+    margin-top: 2.5rem;
   }
-
   .stat-item {
     background: var(--card-bg);
     padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
   }
-
+  .stat-item:hover { background: #141414; }
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.76,0,0.24,1);
+  }
+  .stat-item:hover::before { transform: scaleX(1); }
   .stat-num {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--accent);
     line-height: 1;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
   }
-
   .stat-label {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
+  /* ── Games ── */
   .games-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
@@ -285,17 +407,20 @@
 
   .game-card {
     background: var(--card-bg);
-    padding: 2rem;
+    padding: 3rem;
     position: relative;
     overflow: hidden;
-    transition: background 0.3s;
     text-decoration: none;
     color: var(--fg);
     display: block;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transform-style: preserve-3d;
+    transition: background 0.35s;
+    will-change: transform;
   }
-
-  .game-card:hover { background: #161616; }
-
   .game-card::before {
     content: '';
     position: absolute;
@@ -304,225 +429,187 @@
     background: var(--accent);
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.3s;
+    transition: transform 0.4s cubic-bezier(0.76,0,0.24,1);
+    z-index: 3;
   }
-
+  .game-card:hover { background: #121212; }
   .game-card:hover::before { transform: scaleX(1); }
 
-  .game-card .view-more {
+  /* Scan line sweep */
+  .game-card::after {
+    content: '';
     position: absolute;
-    bottom: 2rem; right: 2rem;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity 0.25s, transform 0.25s;
-  }
-
-  .game-card:hover .view-more {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .game-card.no-link {
+    top: 0; left: -100%; bottom: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, rgba(200,255,0,0.04), transparent);
+    transition: left 0.6s cubic-bezier(0.76,0,0.24,1);
+    z-index: 2;
     pointer-events: none;
   }
+  .game-card:hover::after { left: 140%; }
+
+  .game-bg-wireframe {
+    position: absolute;
+    top: 50%; right: -2%;
+    transform: translateY(-50%);
+    opacity: 0.06;
+    transition: opacity 0.4s, transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .game-card:hover .game-bg-wireframe {
+    opacity: 0.14;
+    transform: translateY(-50%) scale(1.04) rotate(3deg);
+  }
+
+  .game-card-inner { position: relative; z-index: 2; }
 
   .game-tag {
     font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.15em;
+    font-size: 9px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
   }
-
   .game-title {
-    font-size: 1.4rem;
+    font-size: clamp(2rem, 3.5vw, 3rem);
     font-weight: 800;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 1.25rem;
   }
-
   .game-desc {
     font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    color: var(--muted-hi);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 380px;
+    text-wrap: pretty;
   }
-
+  .game-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   .game-status {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 10px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-
-  .game-status.active {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .game-icon {
-    position: absolute;
-    bottom: 1.5rem; right: 1.5rem;
-    opacity: 0.06;
-    font-size: 5rem;
-    line-height: 1;
-  }
-
-  .pillars {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-top: 1rem;
-  }
-
-  .pillar {
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .pillar-num {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-
-  .pillar-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-  }
-
-  .pillar-body {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .contact-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-
-  .contact-title {
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.5rem;
-  }
-
-  .contact-sub {
-    font-size: 15px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .contact-links {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .contact-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid var(--border);
-    text-decoration: none;
-    color: var(--fg);
-    font-weight: 600;
-    transition: border-color 0.2s, background 0.2s;
-  }
-
-  .contact-link:hover {
-    border-color: var(--accent);
-    background: rgba(200,255,0,0.04);
-  }
-
-  .contact-link-arrow {
-    font-size: 18px;
-    color: var(--accent);
-  }
-
-  /* DEVLOG */
-  .devlog-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 3rem;
-  }
-
-  .devlog-header .section-label { margin-bottom: 0; }
-
-  .devlog-gh-link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    color: var(--muted-hi);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .game-status.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .game-status.active::before {
+    content: '';
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: blink 1.2s steps(2,end) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .game-arrow {
+    font-size: 18px;
     color: var(--muted);
+    transition: color 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .game-card:hover .game-arrow { color: var(--accent); transform: translate(4px, -4px); }
+
+  /* ── Philosophy ── */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .pillar {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    transition: background 0.25s;
+  }
+  .pillar:hover { background: #141414; }
+  .pillar-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.14em;
+    margin-bottom: 1.5rem;
+  }
+  .pillar-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+  .pillar-body { font-size: 13px; color: var(--muted-hi); line-height: 1.75; text-wrap: pretty; }
+
+  /* ── Devlog / Announcements ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3.5rem;
+  }
+  .section-header .section-label { margin-bottom: 0; }
+
+  .gh-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-hi);
     text-decoration: none;
     border: 1px solid var(--border);
     padding: 8px 14px;
     transition: color 0.2s, border-color 0.2s;
   }
+  .gh-link:hover { color: var(--accent); border-color: var(--accent); }
 
-  .devlog-gh-link:hover { color: var(--accent); border-color: var(--accent); }
-
-  .devlog-list {
+  .feed-list {
     display: flex;
     flex-direction: column;
-    gap: 1px;
-    background: var(--border);
+    gap: 0;
     border: 1px solid var(--border);
-    min-height: 160px;
+    min-height: 140px;
+    position: relative;
   }
 
-  .devlog-entry {
+  .feed-entry {
     background: var(--card-bg);
-    padding: 2rem;
+    padding: 2rem 2rem 2rem 3.5rem;
     display: grid;
-    grid-template-columns: 200px 1fr auto;
-    gap: 2rem;
+    grid-template-columns: 180px 1fr auto;
+    gap: 2.5rem;
     align-items: start;
     text-decoration: none;
     color: var(--fg);
     transition: background 0.2s;
+    border-bottom: 1px solid var(--border);
+    position: relative;
   }
-
-  .devlog-entry:hover { background: #161616; }
-
-  .devlog-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding-top: 3px;
+  .feed-entry:last-child { border-bottom: none; }
+  .feed-entry::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: transparent;
+    transition: background 0.2s;
   }
+  .feed-entry:hover { background: #111; }
+  .feed-entry:hover::before { background: var(--accent); }
 
-  .devlog-date {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-  }
-
-  .devlog-tag {
+  .feed-meta { display: flex; flex-direction: column; gap: 8px; padding-top: 2px; }
+  .feed-date { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+  .feed-tag {
     display: inline-block;
     font-family: var(--mono);
     font-size: 9px;
@@ -533,39 +620,32 @@
     color: var(--accent);
     width: fit-content;
   }
-
-  .devlog-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--fg);
-  }
-
-  .devlog-body {
-    font-size: 14px;
-    color: var(--muted);
+  .feed-title { font-size: 15px; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+  .feed-body {
+    font-size: 13px;
+    color: var(--muted-hi);
     line-height: 1.65;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-wrap: pretty;
   }
-
-  .devlog-arrow {
-    font-size: 16px;
+  .feed-arrow {
+    font-size: 14px;
     color: var(--muted);
-    padding-top: 3px;
+    padding-top: 2px;
     transition: color 0.2s, transform 0.2s;
+    align-self: center;
   }
+  .feed-entry:hover .feed-arrow { color: var(--accent); transform: translateX(4px); }
 
-  .devlog-entry:hover .devlog-arrow { color: var(--accent); transform: translateX(3px); }
-
-  .devlog-loading, .devlog-error, .devlog-empty {
+  .feed-state {
     background: var(--card-bg);
-    padding: 3rem 2rem;
+    padding: 3.5rem 2rem;
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
     text-align: center;
@@ -574,149 +654,61 @@
     justify-content: center;
     gap: 12px;
   }
-
-  .devlog-loading::before {
+  .feed-state.loading::before {
     content: '';
-    width: 8px; height: 8px;
+    width: 7px; height: 7px;
     border: 1px solid var(--accent);
     border-top-color: transparent;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     flex-shrink: 0;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .devlog-view-all {
+  .view-all {
     margin-top: 1.5rem;
     display: flex;
     justify-content: flex-end;
   }
-
-  .devlog-view-all a {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: color 0.2s;
-  }
-
-  .devlog-view-all a:hover { color: var(--accent); }
-
-  /* ANNOUNCEMENTS */
-  .announce-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 3rem;
-  }
-
-  .announce-header .section-label { margin-bottom: 0; }
-
-  .announce-gh-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+  .view-all a {
     font-family: var(--mono);
     font-size: 10px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    border: 1px solid var(--border);
-    padding: 8px 14px;
-    transition: color 0.2s, border-color 0.2s;
-  }
-
-  .announce-gh-link:hover { color: var(--accent); border-color: var(--accent); }
-
-  .announce-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    min-height: 120px;
-  }
-
-  .announce-entry {
-    background: var(--card-bg);
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: 200px 1fr auto;
-    gap: 2rem;
-    align-items: start;
-    text-decoration: none;
-    color: var(--fg);
-    transition: background 0.2s;
-  }
-
-  .announce-entry:hover { background: #161616; }
-
-  .announce-view-all {
-    margin-top: 2rem;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .announce-view-all a {
-    color: var(--muted);
+    color: var(--muted-hi);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     transition: color 0.2s;
   }
+  .view-all a:hover { color: var(--accent); }
 
-  .announce-view-all a:hover { color: var(--accent); }
-
-  /* NEWSLETTER */
+  /* ── Newsletter ── */
   .newsletter-inner {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    gap: 5rem;
     align-items: center;
-    margin-top: 4rem;
-    padding-top: 3rem;
+    margin-top: 5rem;
+    padding-top: 3.5rem;
     border-top: 1px solid var(--border);
   }
-
   .newsletter-title {
-    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.02em;
     margin-bottom: 1rem;
   }
-
-  .newsletter-sub {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .newsletter-action {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
+  .newsletter-sub { font-size: 14px; color: var(--muted-hi); line-height: 1.75; text-wrap: pretty; }
   .newsletter-form {
     display: flex;
-    gap: 0;
     border: 1px solid var(--border);
     transition: border-color 0.2s;
+    margin-bottom: 0.75rem;
   }
-
   .newsletter-form:focus-within { border-color: var(--accent); }
-
   .newsletter-input {
     flex: 1;
     background: var(--card-bg);
@@ -728,46 +720,82 @@
     letter-spacing: 0.08em;
     color: var(--fg);
   }
-
   .newsletter-input::placeholder { color: var(--muted); }
-
   .newsletter-submit {
     background: var(--accent);
-    color: #0a0a0a;
+    color: #000;
     border: none;
     padding: 1rem 1.5rem;
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    cursor: none;
+    transition: background 0.2s;
     white-space: nowrap;
   }
-
   .newsletter-submit:hover { background: #b8ef00; }
-  .newsletter-submit:disabled { opacity: 0.5; cursor: default; }
-
+  .newsletter-submit:disabled { opacity: 0.5; }
+  .newsletter-note { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--muted); }
   .newsletter-success {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent);
     padding: 1rem 0;
+    margin-bottom: 0.75rem;
     display: none;
   }
 
-  .newsletter-note {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: var(--muted);
+  /* ── Contact ── */
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
   }
+  .contact-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.5rem;
+  }
+  .contact-sub { font-size: 15px; color: var(--muted-hi); line-height: 1.75; text-wrap: pretty; }
+  .contact-links { display: flex; flex-direction: column; gap: 1px; }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    text-decoration: none;
+    color: var(--fg);
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-link:last-child { border-bottom: 1px solid var(--border); }
+  .contact-link::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: rgba(200,255,0,0.06);
+    transition: width 0.35s cubic-bezier(0.76,0,0.24,1);
+  }
+  .contact-link:hover { border-color: var(--accent); background: #111; }
+  .contact-link:hover::before { width: 100%; }
+  .contact-link span { position: relative; }
+  .contact-arrow { color: var(--accent); font-size: 16px; position: relative; }
 
-  /* END NEW SECTIONS */
-
+  /* ── Footer ── */
   footer {
     border-top: 1px solid var(--border);
     padding: 2rem 3rem;
@@ -775,282 +803,194 @@
     align-items: center;
     justify-content: space-between;
   }
+  .footer-logo { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--muted); }
+  .footer-copy { font-family: var(--mono); font-size: 10px; color: var(--muted); }
 
-  .footer-logo {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-  }
+  /* ── Fade in ── */
+  .fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  .fade-in[data-delay="1"] { transition-delay: 0.1s; }
+  .fade-in[data-delay="2"] { transition-delay: 0.2s; }
+  .fade-in[data-delay="3"] { transition-delay: 0.3s; }
 
-  .footer-copy {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .fade-in {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+  /* ── Welcome overlay ── */
   .welcome {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     z-index: 9999;
     background: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: opacity 0.7s ease, visibility 0.7s ease;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
   }
-
   .welcome::before {
     content: '';
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background-image:
       linear-gradient(rgba(200,255,0,0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(200,255,0,0.05) 1px, transparent 1px);
     background-size: 48px 48px;
-    mask-image: radial-gradient(circle at center, #000 0%, #000 45%, transparent 75%);
-    -webkit-mask-image: radial-gradient(circle at center, #000 0%, #000 45%, transparent 75%);
-    animation: welcomeGrid 1.4s ease-out forwards;
+    mask-image: radial-gradient(circle at center, #000 0%, #000 40%, transparent 72%);
+    -webkit-mask-image: radial-gradient(circle at center, #000 0%, #000 40%, transparent 72%);
+    animation: welcomeGrid 1.5s ease-out forwards;
   }
-
   @keyframes welcomeGrid {
-    from { opacity: 0; transform: scale(1.15); }
+    from { opacity: 0; transform: scale(1.12); }
     to { opacity: 1; transform: scale(1); }
   }
-
-  .welcome.done {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
+  .welcome.done { opacity: 0; visibility: hidden; pointer-events: none; }
 
   .welcome-stage {
     position: relative;
-    width: min(90vw, 520px);
+    width: min(90vw, 480px);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2.5rem;
   }
 
-  .welcome-mark {
-    width: 140px;
-    height: 140px;
-    position: relative;
-  }
-
+  .welcome-mark { width: 120px; height: 120px; position: relative; }
   .welcome-mark svg {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     transform: rotate(-45deg);
-    animation: markSpin 2.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation: markSpin 2s cubic-bezier(0.65,0,0.35,1) forwards;
   }
-
-  @keyframes markSpin {
-    to { transform: rotate(0deg); }
-  }
-
+  @keyframes markSpin { to { transform: rotate(0deg); } }
   .welcome-mark svg * {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 1;
+    fill: none; stroke: var(--accent); stroke-width: 1;
     stroke-linecap: round;
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: strokeDraw 1.6s ease-out forwards;
+    stroke-dasharray: 1000; stroke-dashoffset: 1000;
+    animation: strokeDraw 1.5s ease-out forwards;
   }
-
   .welcome-mark svg *:nth-child(1) { animation-delay: 0.1s; }
   .welcome-mark svg *:nth-child(2) { animation-delay: 0.25s; }
   .welcome-mark svg *:nth-child(3) { animation-delay: 0.4s; }
   .welcome-mark svg *:nth-child(4) { animation-delay: 0.55s; }
   .welcome-mark svg *:nth-child(5) { animation-delay: 0.7s; }
   .welcome-mark svg *:nth-child(6) { animation-delay: 0.85s; }
-  .welcome-mark svg *:nth-child(7) { animation-delay: 1.0s; }
-
-  @keyframes strokeDraw {
-    to { stroke-dashoffset: 0; }
-  }
+  @keyframes strokeDraw { to { stroke-dashoffset: 0; } }
 
   .welcome-core {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
     opacity: 0;
-    animation: coreFade 0.6s ease-out 1.8s forwards;
+    animation: coreFade 0.5s ease-out 1.7s forwards;
   }
-
   .welcome-core::before {
     content: '';
-    width: 10px;
-    height: 10px;
+    width: 8px; height: 8px;
     background: var(--accent);
     border-radius: 50%;
-    box-shadow: 0 0 20px var(--accent), 0 0 40px rgba(200,255,0,0.4);
-    animation: corePulse 1.6s ease-in-out infinite;
+    box-shadow: 0 0 16px var(--accent), 0 0 36px rgba(200,255,0,0.35);
+    animation: corePulse 1.5s ease-in-out infinite;
   }
-
   @keyframes coreFade { to { opacity: 1; } }
-  @keyframes corePulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.6); opacity: 0.6; }
-  }
+  @keyframes corePulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.7); opacity:0.6; } }
 
   .welcome-wordmark {
-    display: flex;
-    gap: 0.2em;
-    font-size: clamp(2rem, 6vw, 3.5rem);
+    display: flex; gap: 0.15em;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1;
   }
-
   .welcome-wordmark span {
     display: inline-block;
-    opacity: 0;
-    transform: translateY(14px);
-    animation: letterUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0; transform: translateY(16px);
+    animation: letterUp 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
   }
-
-  .welcome-wordmark span.outline {
-    color: transparent;
-    -webkit-text-stroke: 1px var(--fg);
-  }
-
-  .welcome-wordmark span:nth-child(1) { animation-delay: 1.0s; }
-  .welcome-wordmark span:nth-child(2) { animation-delay: 1.08s; }
-  .welcome-wordmark span:nth-child(3) { animation-delay: 1.16s; }
-  .welcome-wordmark span:nth-child(4) { animation-delay: 1.24s; }
-  .welcome-wordmark span:nth-child(5) { animation-delay: 1.38s; }
-  .welcome-wordmark span:nth-child(6) { animation-delay: 1.46s; }
-  .welcome-wordmark span:nth-child(7) { animation-delay: 1.54s; }
-  .welcome-wordmark span:nth-child(8) { animation-delay: 1.62s; }
-  .welcome-wordmark span:nth-child(9) { animation-delay: 1.7s; }
-
-  @keyframes letterUp { to { opacity: 1; transform: translateY(0); } }
+  .welcome-wordmark span.outline { color: transparent; -webkit-text-stroke: 1px var(--fg); }
+  .welcome-wordmark span:nth-child(1) { animation-delay: 0.95s; }
+  .welcome-wordmark span:nth-child(2) { animation-delay: 1.03s; }
+  .welcome-wordmark span:nth-child(3) { animation-delay: 1.11s; }
+  .welcome-wordmark span:nth-child(4) { animation-delay: 1.19s; }
+  .welcome-wordmark span:nth-child(5) { animation-delay: 1.32s; }
+  .welcome-wordmark span:nth-child(6) { animation-delay: 1.40s; }
+  .welcome-wordmark span:nth-child(7) { animation-delay: 1.48s; }
+  .welcome-wordmark span:nth-child(8) { animation-delay: 1.56s; }
+  .welcome-wordmark span:nth-child(9) { animation-delay: 1.64s; }
+  @keyframes letterUp { to { opacity:1; transform:translateY(0); } }
 
   .welcome-meta {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
+    width: 100%; display: flex; flex-direction: column; gap: 0.9rem;
     opacity: 0;
-    animation: metaFade 0.6s ease-out 1.6s forwards;
+    animation: metaFade 0.5s ease-out 1.5s forwards;
   }
-
   @keyframes metaFade { to { opacity: 1; } }
-
   .welcome-log {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--muted);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
   }
-
   .welcome-log .status {
     color: var(--accent);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; gap: 8px;
   }
-
   .welcome-log .status::before {
     content: '';
-    width: 6px;
-    height: 6px;
+    width: 5px; height: 5px;
     background: var(--accent);
-    animation: statusBlink 0.9s steps(2, end) infinite;
+    animation: statusBlink 0.9s steps(2,end) infinite;
   }
-
   @keyframes statusBlink { 50% { opacity: 0; } }
-
   .welcome-progress {
-    position: relative;
-    height: 1px;
-    background: var(--border);
-    width: 100%;
-    overflow: hidden;
+    position: relative; height: 1px;
+    background: var(--border); width: 100%; overflow: hidden;
   }
-
   .welcome-progress::after {
     content: '';
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: var(--accent);
-    transform-origin: left;
-    transform: scaleX(0);
-    animation: progress 2.4s cubic-bezier(0.77, 0, 0.18, 1) 0.2s forwards;
+    transform-origin: left; transform: scaleX(0);
+    animation: progress 2.4s cubic-bezier(0.77,0,0.18,1) 0.2s forwards;
   }
-
   @keyframes progress { to { transform: scaleX(1); } }
-
-  .welcome-percent {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .welcome-percent b {
-    color: var(--fg);
-    font-weight: 400;
-  }
+  .welcome-percent { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .welcome-percent b { color: var(--fg); font-weight: 400; }
 
   body.loading { overflow: hidden; }
-  body.loading .hero-title,
-  body.loading .hero-desc,
-  body.loading .hero-eyebrow,
-  body.loading .hero-cta,
-  body.loading nav { opacity: 0; transform: translateY(14px); }
-
-  nav, .hero-title, .hero-desc, .hero-eyebrow, .hero-cta {
-    transition: opacity 0.8s ease, transform 0.8s ease;
+  body.loading .hero-title, body.loading .hero-desc,
+  body.loading .hero-eyebrow, body.loading .hero-actions,
+  body.loading nav { opacity: 0; transform: translateY(12px); }
+  nav, .hero-title, .hero-desc, .hero-eyebrow, .hero-actions {
+    transition: opacity 0.9s ease, transform 0.9s ease;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .welcome, .welcome *, .welcome::before { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
   }
-
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     nav { padding: 1rem 1.5rem; }
-    .nav-links { gap: 1rem; }
-    .hero { padding: 0 1.5rem 3rem; }
+    .nav-links { gap: 1.5rem; }
+    section { padding: 5rem 1.5rem; }
+    .hero { padding: 0 1.5rem 3.5rem; }
     .hero-corner { display: none; }
-    .hero-wireframe { opacity: 0.06; right: -5%; }
-    section { padding: 4rem 1.5rem; }
-    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-wireframe { opacity: 0.07; right: -8%; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
     .games-grid { grid-template-columns: 1fr; }
-    .pillars { grid-template-columns: 1fr; }
-    .devlog-entry { grid-template-columns: 1fr; gap: 0.75rem; }
-    .devlog-arrow { display: none; }
-    .devlog-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-    .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .pillars { grid-template-columns: 1fr; gap: 1px; }
+    .feed-entry { grid-template-columns: 1fr; gap: 0.6rem; padding-left: 2rem; }
+    .feed-arrow { display: none; }
+    .newsletter-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
     footer { flex-direction: column; gap: 0.5rem; text-align: center; }
   }
 </style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../../../Downloads/WireFrame%20Studios/tweaks-panel.jsx"></script>
 </head>
 <body class="loading">
 
+<!-- Custom cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-label"></div>
+
+<!-- Welcome overlay -->
 <div class="welcome" id="welcome" aria-hidden="true">
   <div class="welcome-stage">
     <div class="welcome-mark">
@@ -1061,7 +1001,6 @@
         <circle cx="60" cy="60" r="22"/>
         <line x1="10" y1="10" x2="110" y2="110"/>
         <line x1="110" y1="10" x2="10" y2="110"/>
-        <line x1="60" y1="0" x2="60" y2="120"/>
       </svg>
       <div class="welcome-core"></div>
     </div>
@@ -1093,23 +1032,35 @@
 
 <section class="hero" id="hero">
   <div class="hero-grid"></div>
-  <div class="hero-corner">Est. 2025<br>Independent Studio<br>Built from scratch</div>
-  <svg class="hero-wireframe" width="420" height="420" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="20" y="20" width="280" height="280" stroke="#c8ff00" stroke-width="1"/>
-    <rect x="60" y="60" width="200" height="200" stroke="#c8ff00" stroke-width="0.5"/>
-    <rect x="100" y="100" width="120" height="120" stroke="#c8ff00" stroke-width="0.5"/>
-    <line x1="20" y1="20" x2="300" y2="300" stroke="#c8ff00" stroke-width="0.5"/>
-    <line x1="300" y1="20" x2="20" y2="300" stroke="#c8ff00" stroke-width="0.5"/>
-    <circle cx="160" cy="160" r="100" stroke="#c8ff00" stroke-width="0.5"/>
-    <circle cx="160" cy="160" r="60" stroke="#c8ff00" stroke-width="0.5"/>
-    <circle cx="160" cy="160" r="20" stroke="#c8ff00" stroke-width="1"/>
-    <line x1="160" y1="20" x2="160" y2="300" stroke="#c8ff00" stroke-width="0.5" stroke-dasharray="4 4"/>
-    <line x1="20" y1="160" x2="300" y2="160" stroke="#c8ff00" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <div class="hero-corner">
+    Est. <span>2025</span><br>
+    Independent Studio<br>
+    Built from scratch
+  </div>
+
+  <svg class="hero-wireframe" width="480" height="480" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="16" y="16" width="288" height="288" stroke="#c8ff00" stroke-width="0.8"/>
+    <rect x="48" y="48" width="224" height="224" stroke="#c8ff00" stroke-width="0.5"/>
+    <rect x="80" y="80" width="160" height="160" stroke="#c8ff00" stroke-width="0.4"/>
+    <rect x="112" y="112" width="96" height="96" stroke="#c8ff00" stroke-width="0.4"/>
+    <circle cx="160" cy="160" r="120" stroke="#c8ff00" stroke-width="0.5" class="ring-1"/>
+    <circle cx="160" cy="160" r="80" stroke="#c8ff00" stroke-width="0.4" class="ring-2"/>
+    <circle cx="160" cy="160" r="40" stroke="#c8ff00" stroke-width="0.6" class="ring-1"/>
+    <circle cx="160" cy="160" r="14" stroke="#c8ff00" stroke-width="1"/>
+    <line x1="16" y1="16" x2="304" y2="304" stroke="#c8ff00" stroke-width="0.4"/>
+    <line x1="304" y1="16" x2="16" y2="304" stroke="#c8ff00" stroke-width="0.4"/>
+    <line x1="160" y1="0" x2="160" y2="320" stroke="#c8ff00" stroke-width="0.4" stroke-dasharray="5 5"/>
+    <line x1="0" y1="160" x2="320" y2="160" stroke="#c8ff00" stroke-width="0.4" stroke-dasharray="5 5"/>
+    <polygon points="160,16 280,88 280,232 160,304 40,232 40,88" stroke="#c8ff00" stroke-width="0.4" fill="none"/>
   </svg>
+
   <div class="hero-eyebrow">Independent Game Studio</div>
   <h1 class="hero-title">Wire<span>Frame</span></h1>
   <p class="hero-desc">Games built from first principles — crafted with precision, shipped with purpose.</p>
-  <a href="#games" class="hero-cta">View Our Games &rarr;</a>
+  <div class="hero-actions">
+    <a href="#games" class="hero-cta">View Our Games &rarr;</a>
+    <a href="#about" class="hero-cta-ghost">Learn more &darr;</a>
+  </div>
   <div class="scroll-indicator">
     <div class="scroll-line"></div>
     <span>Scroll</span>
@@ -1118,8 +1069,8 @@
 
 <section id="about">
   <div class="section-label">About the Studio</div>
-  <div class="about-grid fade-in">
-    <div>
+  <div class="about-grid">
+    <div class="fade-in">
       <h2 class="about-title">Built from<br>the ground up.</h2>
       <div class="stat-grid">
         <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Projects in dev</div></div>
@@ -1128,7 +1079,7 @@
         <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Independent</div></div>
       </div>
     </div>
-    <div class="about-body">
+    <div class="about-body fade-in" data-delay="2">
       <p>Wireframe Studios is an independent game development studio built on a simple belief: the best games come from developers who truly understand their craft at every level.</p>
       <p>We don't cut corners. Every system, every mechanic, every line of code is written with the intention of understanding — not just getting it to work. That foundation shows in the final product.</p>
       <p>Our games are built to last. Not prototypes, not experiments — finished, polished experiences that we're proud to put our name on.</p>
@@ -1139,55 +1090,64 @@
 <section id="games">
   <div class="section-label">Our Games</div>
   <div class="games-grid fade-in">
-    <div class="game-card no-link">
-      <div class="game-tag">Project 02</div>
-      <div class="game-title">Announcement Soon</div>
-      <div class="game-desc">Something new is in the works. An announcement is coming — stay tuned and subscribe to our mailing list for the reveal.</div>
-      <div class="game-status active">In Development</div>
-      <div class="game-icon">&#9675;</div>
-    </div>
+
     <a class="game-card" href="games/protocol.html">
-      <div class="game-tag">Project 01 &mdash; C++</div>
-      <div class="game-title">Protocol</div>
-      <div class="game-desc">Built in C++ with RayLib — a focused deep dive into game architecture, systems design, and shipping a finished product.</div>
-      <div class="game-status active">In Development</div>
-      <div class="view-more">View Game &rarr;</div>
-      <div class="game-icon">&#9672;</div>
+      <!-- Background wireframe decoration -->
+      <svg class="game-bg-wireframe" width="340" height="340" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="180" height="180" stroke="#c8ff00" stroke-width="0.8"/>
+        <rect x="30" y="30" width="140" height="140" stroke="#c8ff00" stroke-width="0.5"/>
+        <rect x="50" y="50" width="100" height="100" stroke="#c8ff00" stroke-width="0.4"/>
+        <rect x="70" y="70" width="60" height="60" stroke="#c8ff00" stroke-width="0.4"/>
+        <line x1="10" y1="10" x2="190" y2="190" stroke="#c8ff00" stroke-width="0.4"/>
+        <line x1="190" y1="10" x2="10" y2="190" stroke="#c8ff00" stroke-width="0.4"/>
+        <circle cx="100" cy="100" r="8" stroke="#c8ff00" stroke-width="1"/>
+      </svg>
+      <div class="game-card-inner">
+        <div class="game-tag">Project 01 &mdash; C++</div>
+        <div class="game-title">Protocol</div>
+        <div class="game-desc">Built in C++ with RayLib — a focused deep dive into game architecture, systems design, and shipping a finished product.</div>
+        <div class="game-footer">
+          <div class="game-status active">In Development</div>
+          <div class="game-arrow">&#8599;</div>
+        </div>
+      </div>
     </a>
+
     <a class="game-card" href="games/untitled-ii.html">
-      <div class="game-tag">Project 03 &mdash; Source 2</div>
-      <div class="game-title">Untitled Game</div>
-      <div class="game-desc">Built on s&amp;box / Source 2 Engine — exploring modern game engines while deepening our craft.</div>
-      <div class="game-status active">Planned</div>
-      <div class="view-more">View Game &rarr;</div>
-      <div class="game-icon">&#9671;</div>
+      <svg class="game-bg-wireframe" width="340" height="340" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="90" stroke="#c8ff00" stroke-width="0.8"/>
+        <circle cx="100" cy="100" r="65" stroke="#c8ff00" stroke-width="0.5"/>
+        <circle cx="100" cy="100" r="40" stroke="#c8ff00" stroke-width="0.4"/>
+        <circle cx="100" cy="100" r="16" stroke="#c8ff00" stroke-width="1"/>
+        <line x1="100" y1="10" x2="100" y2="190" stroke="#c8ff00" stroke-width="0.4" stroke-dasharray="4 4"/>
+        <line x1="10" y1="100" x2="190" y2="100" stroke="#c8ff00" stroke-width="0.4" stroke-dasharray="4 4"/>
+        <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" stroke="#c8ff00" stroke-width="0.5" fill="none"/>
+      </svg>
+      <div class="game-card-inner">
+        <div class="game-tag">Project 02 &mdash; Source 2</div>
+        <div class="game-title">Untitled<br>Game II</div>
+        <div class="game-desc">Built on s&amp;box / Source 2 Engine — exploring modern game engines while deepening our craft.</div>
+        <div class="game-footer">
+          <div class="game-status">Planned</div>
+          <div class="game-arrow">&#8599;</div>
+        </div>
+      </div>
     </a>
+
   </div>
 </section>
 
 <section id="announcements">
-  <div class="section-label">Announcements</div>
-  <div class="announce-list fade-in" id="announceList">
-    <div class="devlog-loading">Fetching latest announcements</div>
+  <div class="section-header">
+    <div class="section-label">Announcements</div>
+    <a class="gh-link" href="announcements.html">All announcements &rarr;</a>
   </div>
-  <div class="announce-view-all">
-    <a href="announcements.html">All announcements &rarr;</a>
+  <div class="feed-list fade-in" id="announceList">
+    <div class="feed-state loading">Fetching latest announcements</div>
   </div>
+  <div class="view-all"><a href="announcements.html">View all &rarr;</a></div>
 
-  <div class="newsletter-inner fade-in">
-    <div>
-      <div class="newsletter-title">Stay in the Loop</div>
-      <p class="newsletter-sub">Get studio updates, game announcements, and dev insights delivered directly to your inbox. No spam — just signal.</p>
-    </div>
-    <div class="newsletter-action">
-      <form class="newsletter-form" id="newsletterForm">
-        <input class="newsletter-input" type="email" placeholder="your@email.com" required autocomplete="email">
-        <button class="newsletter-submit" type="submit">Subscribe &rarr;</button>
-      </form>
-      <div class="newsletter-success" id="newsletterSuccess">&#10003; You're subscribed — welcome aboard.</div>
-      <div class="newsletter-note">Powered by Google Groups &mdash; unsubscribe any time</div>
-    </div>
-  </div>
+
 </section>
 
 <section id="philosophy">
@@ -1212,17 +1172,17 @@
 </section>
 
 <section id="devlog">
-  <div class="devlog-header">
+  <div class="section-header">
     <div class="section-label">Dev Log</div>
-    <a class="devlog-gh-link" href="https://github.com/alexbriggs08/Protocol/releases" target="_blank" rel="noopener">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      View on GitHub
+    <a class="gh-link" href="https://github.com/alexbriggs08/Protocol/releases" target="_blank" rel="noopener">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      GitHub
     </a>
   </div>
-  <div class="devlog-list fade-in" id="devlogList">
-    <div class="devlog-loading">Fetching latest updates</div>
+  <div class="feed-list fade-in" id="devlogList">
+    <div class="feed-state loading">Fetching latest updates</div>
   </div>
-  <div class="devlog-view-all">
+  <div class="view-all">
     <a href="https://github.com/alexbriggs08/Protocol/releases" target="_blank" rel="noopener">All releases on GitHub &rarr;</a>
   </div>
 </section>
@@ -1235,9 +1195,9 @@
       <p class="contact-sub">Whether you're a player, a collaborator, or just curious — we'd love to hear from you.</p>
     </div>
     <div class="contact-links">
-      <a class="contact-link" href="mailto:hello@wireframestudios.com"><span>Email Us</span><span class="contact-link-arrow">&rarr;</span></a>
-      <a class="contact-link" href="https://twitter.com/wireframestudios" target="_blank" rel="noopener"><span>Follow on Twitter / X</span><span class="contact-link-arrow">&rarr;</span></a>
-      <a class="contact-link" href="#" target="_blank" rel="noopener"><span>Join our Discord</span><span class="contact-link-arrow">&rarr;</span></a>
+      <a class="contact-link" href="mailto:hello@wireframestudios.com"><span>Email Us</span><span class="contact-arrow">&rarr;</span></a>
+      <a class="contact-link" href="https://twitter.com/wireframestudios" target="_blank" rel="noopener"><span>Follow on Twitter / X</span><span class="contact-arrow">&rarr;</span></a>
+      <a class="contact-link" href="#" target="_blank" rel="noopener"><span>Join our Discord</span><span class="contact-arrow">&rarr;</span></a>
     </div>
   </div>
 </section>
@@ -1248,168 +1208,481 @@
 </footer>
 
 <script>
+  // ── Custom cursor ──
+  (function () {
+    const dot    = document.getElementById('cursor-dot');
+    const ring   = document.getElementById('cursor-ring');
+    const label  = document.getElementById('cursor-label');
+
+    // Raw mouse position (dot follows this exactly)
+    let mx = -100, my = -100;
+    // Lerped ring position
+    let rx = -100, ry = -100;
+    // Lerp speed — higher = snappier ring trail
+    const LERP_DEFAULT = 0.13;
+
+    // Hide until first move
+    dot.style.opacity  = '0';
+    ring.style.opacity = '0';
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    });
+
+    // rAF loop
+    (function loop() {
+      requestAnimationFrame(loop);
+      // Dot: instant
+      dot.style.transform  = `translate(${mx - 2.5}px, ${my - 2.5}px)`;
+      // Ring: lerp toward mouse
+      const LERP = window.__cursorLerp || LERP_DEFAULT;
+      rx += (mx - rx) * LERP;
+      ry += (my - ry) * LERP;
+      const rSize = parseInt(getComputedStyle(ring).width) / 2;
+      ring.style.transform  = `translate(${rx - rSize}px, ${ry - rSize}px)`;
+      // Label: slightly behind ring
+      label.style.transform = `translate(${rx + 20}px, ${ry - 16}px)`;
+    })();
+
+    // Hover targets
+    document.querySelectorAll('a, button').forEach(el => {
+      const tip = el.dataset.cursor || el.getAttribute('aria-label') || '';
+      el.addEventListener('mouseenter', () => {
+        document.body.classList.add('cursor-hover');
+        if (tip) label.textContent = tip;
+      });
+      el.addEventListener('mouseleave', () => {
+        document.body.classList.remove('cursor-hover');
+        label.textContent = '';
+      });
+    });
+
+    // Text inputs: caret-style ring
+    document.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-text'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-text'));
+    });
+
+    document.addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
+    document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-down'));
+
+    // Hide cursor when leaving window
+    document.addEventListener('mouseleave', () => {
+      dot.style.opacity  = '0';
+      ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    });
+  })();
+
+  // ── 3D card tilt ──
+  document.querySelectorAll('.game-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 5}deg) translateZ(4px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+
+  // ── Intersection observer ──
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.12 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-  // ── Dev Log: fetch GitHub Releases ──────────────────────────────────────
-  // UPDATE THIS: replace with your actual GitHub username/repo
+  // ── Dev Log: fetch GitHub Releases ──
   const GITHUB_REPO = 'alexbriggs08/Protocol';
 
   function formatDate(iso) {
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   }
-
   function stripMarkdown(md) {
-    return (md || '')
-      .replace(/#{1,6}\s?/g, '')
-      .replace(/\*\*(.*?)\*\*/g, '$1')
-      .replace(/\*(.*?)\*/g, '$1')
-      .replace(/`(.*?)`/g, '$1')
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-      .replace(/\n+/g, ' ')
-      .trim();
+    return (md || '').replace(/#{1,6}\s?/g,'').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/`(.*?)`/g,'$1').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/\n+/g,' ').trim();
   }
 
   async function loadDevLog() {
     const list = document.getElementById('devlogList');
     if (!list) return;
     try {
-      const res = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=5`,
-        { headers: { Accept: 'application/vnd.github+json' } }
-      );
+      const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=4`, { headers: { Accept: 'application/vnd.github+json' } });
       if (!res.ok) throw new Error(res.status);
       const releases = await res.json();
-      if (!releases.length) {
-        list.innerHTML = '<div class="devlog-empty">No releases yet — check back soon.</div>';
-        return;
-      }
+      if (!releases.length) { list.innerHTML = '<div class="feed-state">No releases yet — check back soon.</div>'; return; }
       list.innerHTML = releases.map(r => {
-        const body = stripMarkdown(r.body).slice(0, 180) + (r.body && r.body.length > 180 ? '…' : '');
-        return `<a class="devlog-entry" href="${r.html_url}" target="_blank" rel="noopener">
-          <div class="devlog-meta">
-            <div class="devlog-date">${formatDate(r.published_at)}</div>
-            <div class="devlog-tag">${r.tag_name}</div>
-          </div>
-          <div>
-            <div class="devlog-title">${r.name || r.tag_name}</div>
-            ${body ? `<div class="devlog-body">${body}</div>` : ''}
-          </div>
-          <div class="devlog-arrow">&#8594;</div>
+        const body = stripMarkdown(r.body).slice(0, 160) + (r.body && r.body.length > 160 ? '…' : '');
+        return `<a class="feed-entry" href="${r.html_url}" target="_blank" rel="noopener">
+          <div class="feed-meta"><div class="feed-date">${formatDate(r.published_at)}</div><div class="feed-tag">${r.tag_name}</div></div>
+          <div><div class="feed-title">${r.name || r.tag_name}</div>${body ? `<div class="feed-body">${body}</div>` : ''}</div>
+          <div class="feed-arrow">&#8594;</div>
         </a>`;
       }).join('');
-    } catch (err) {
-      list.innerHTML = `<div class="devlog-error">
-        Couldn't load releases right now —
-        <a href="https://github.com/${GITHUB_REPO}/releases" target="_blank" rel="noopener" style="color:var(--accent);">view them on GitHub</a>.
-      </div>`;
+    } catch {
+      list.innerHTML = `<div class="feed-state">Couldn't load — <a href="https://github.com/${GITHUB_REPO}/releases" target="_blank" style="color:var(--accent)">view on GitHub</a></div>`;
     }
   }
-
   loadDevLog();
 
-  // ── Announcements: fetch GitHub Discussions Atom feed ────────────────────
+  // ── Announcements: fetch GitHub Discussions Atom ──
   const DISCUSSIONS_URL = 'https://github.com/alexbriggs08/wireframe-studios/discussions.atom';
 
   async function loadAnnouncements() {
     const list = document.getElementById('announceList');
     if (!list) return;
     try {
-      const res = await fetch(
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(DISCUSSIONS_URL)}`
-      );
+      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(DISCUSSIONS_URL)}`);
       if (!res.ok) throw new Error(res.status);
       const xml = await res.text();
       const doc = new DOMParser().parseFromString(xml, 'application/xml');
       const entries = Array.from(doc.querySelectorAll('entry')).slice(0, 3);
-      if (!entries.length) {
-        list.innerHTML = '<div class="devlog-empty">No announcements yet — check back soon.</div>';
-        return;
-      }
+      if (!entries.length) { list.innerHTML = '<div class="feed-state">No announcements yet.</div>'; return; }
       list.innerHTML = entries.map(e => {
         const title = e.querySelector('title')?.textContent || 'Untitled';
         const link = e.querySelector('link')?.getAttribute('href') || '#';
-        const date = new Date(e.querySelector('published')?.textContent).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const date = new Date(e.querySelector('published')?.textContent).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
         const raw = e.querySelector('content')?.textContent || '';
-        const body = raw.replace(/<[^>]+>/g, '').trim().slice(0, 180) + (raw.length > 180 ? '…' : '');
-        return `<a class="announce-entry devlog-entry" href="${link}" target="_blank" rel="noopener">
-          <div class="devlog-meta">
-            <div class="devlog-date">${date}</div>
-            <div class="devlog-tag">Announcement</div>
-          </div>
-          <div>
-            <div class="devlog-title">${title}</div>
-            ${body ? `<div class="devlog-body">${body}</div>` : ''}
-          </div>
-          <div class="devlog-arrow">&#8594;</div>
+        const body = raw.replace(/<[^>]+>/g,'').trim().slice(0, 160) + (raw.length > 160 ? '…' : '');
+        return `<a class="feed-entry" href="${link}" target="_blank" rel="noopener">
+          <div class="feed-meta"><div class="feed-date">${date}</div><div class="feed-tag">Announcement</div></div>
+          <div><div class="feed-title">${title}</div>${body ? `<div class="feed-body">${body}</div>` : ''}</div>
+          <div class="feed-arrow">&#8594;</div>
         </a>`;
       }).join('');
-    } catch (err) {
-      list.innerHTML = `<div class="devlog-error">
-        Couldn't load announcements right now —
-        <a href="https://github.com/alexbriggs08/wireframe-studios/discussions" target="_blank" rel="noopener" style="color:var(--accent);">view on GitHub</a>.
-      </div>`;
+    } catch {
+      list.innerHTML = `<div class="feed-state">Couldn't load — <a href="https://github.com/alexbriggs08/wireframe-studios/discussions" target="_blank" style="color:var(--accent)">view on GitHub</a></div>`;
     }
   }
-
   loadAnnouncements();
 
-  // ── Newsletter sign-up: submits to Google Form ────────────────────────────
-  // HOW TO SET UP:
-  // 1. Create a Google Form with a single "Email" field at forms.google.com
-  // 2. Click the 3-dot menu → Get pre-filled link, fill in a test email, copy the URL
-  // 3. From that URL extract: the FORM_ID (long string in the path) and entry.XXXXXXX (the field name)
-  // 4. Update GOOGLE_FORM_ACTION and GOOGLE_FORM_EMAIL_ENTRY below.
+  // ── Newsletter ──
   const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSffVH2Cnlgtkz74hCpxY2iiepEv8kJN2I4ht2X_7BxcfhGtjQ/formResponse';
   const GOOGLE_FORM_EMAIL_ENTRY = 'entry.1400290315';
-
-  document.getElementById('newsletterForm')?.addEventListener('submit', async (e) => {
+  document.getElementById('newsletterForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
     const btn = form.querySelector('.newsletter-submit');
     const success = document.getElementById('newsletterSuccess');
     const email = form.querySelector('input[type="email"]').value;
-    btn.disabled = true;
-    btn.textContent = 'Subscribing…';
-    try {
-      const body = new FormData();
-      body.append(GOOGLE_FORM_EMAIL_ENTRY, email);
-      await fetch(GOOGLE_FORM_ACTION, { method: 'POST', body, mode: 'no-cors' });
-    } catch (_) {}
-    form.style.display = 'none';
-    success.style.display = 'block';
+    btn.disabled = true; btn.textContent = 'Subscribing…';
+    try { const b = new FormData(); b.append(GOOGLE_FORM_EMAIL_ENTRY, email); await fetch(GOOGLE_FORM_ACTION, { method:'POST', body:b, mode:'no-cors' }); } catch(_) {}
+    form.style.display = 'none'; success.style.display = 'block';
   });
 
-  (function welcomeAnim() {
+  // ── Welcome animation ──
+  (function() {
     const overlay = document.getElementById('welcome');
     const pct = document.getElementById('welcomePercent');
     const status = document.getElementById('welcomeStatus');
     if (!overlay) return;
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = prefersReduced ? 300 : 2600;
-    const stages = [[0.00,'Initializing'],[0.25,'Loading modules'],[0.55,'Compiling shaders'],[0.80,'Rendering wireframe'],[0.97,'Ready']];
+    const duration = prefersReduced ? 200 : 2600;
+    const stages = [[0,'Initializing'],[0.25,'Loading modules'],[0.55,'Compiling shaders'],[0.80,'Rendering wireframe'],[0.97,'Ready']];
     const start = performance.now();
     function frame(now) {
       const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
+      const eased = 1 - Math.pow(1-t,3);
       const value = Math.round(eased * 100);
-      pct.textContent = String(value).padStart(3, '0');
-      for (let i = stages.length - 1; i >= 0; i--) {
-        if (eased >= stages[i][0]) { if (status.textContent !== stages[i][1]) status.textContent = stages[i][1]; break; }
+      pct.textContent = String(value).padStart(3,'0');
+      for (let i = stages.length-1; i>=0; i--) {
+        if (eased >= stages[i][0]) { status.textContent = stages[i][1]; break; }
       }
-      if (t < 1) { requestAnimationFrame(frame); }
+      if (t < 1) requestAnimationFrame(frame);
       else {
         pct.textContent = '100';
-        setTimeout(() => { overlay.classList.add('done'); document.body.classList.remove('loading'); }, 250);
-        setTimeout(() => overlay.remove(), 1400);
+        setTimeout(() => { overlay.classList.add('done'); document.body.classList.remove('loading'); }, 200);
+        setTimeout(() => overlay.remove(), 1200);
       }
     }
     requestAnimationFrame(frame);
   })();
 </script>
-<script src="transition.js"></script>
+<script>
+/**
+ * Wireframe Studios — Page Transition System
+ * Exit: fast wireframe wipe overlay slides in from bottom
+ * Enter: overlay slides out revealing new page
+ */
+(function () {
+  const DURATION_EXIT  = 420;   // ms — how long the exit overlay takes to cover screen
+  const DURATION_HOLD  = 80;    // ms — brief hold at full cover before navigating
+  const DURATION_ENTER = 520;   // ms — how long the enter reveal takes
+
+  /* ── Build the overlay element ── */
+  function buildOverlay() {
+    const el = document.createElement('div');
+    el.id = 'wf-transition';
+    el.innerHTML = `
+      <div class="wf-t-grid"></div>
+      <div class="wf-t-bar"></div>
+      <div class="wf-t-logo">
+        <svg width="28" height="28" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="100" height="100" stroke="#c8ff00" stroke-width="2"/>
+          <rect x="30" y="30" width="60" height="60" stroke="#c8ff00" stroke-width="1"/>
+          <line x1="10" y1="10" x2="110" y2="110" stroke="#c8ff00" stroke-width="1"/>
+          <line x1="110" y1="10" x2="10" y2="110" stroke="#c8ff00" stroke-width="1"/>
+          <circle cx="60" cy="60" r="20" stroke="#c8ff00" stroke-width="1.5"/>
+        </svg>
+        <span>WF / Studios</span>
+      </div>
+    `;
+    document.body.appendChild(el);
+    return el;
+  }
+
+  /* ── Inject styles once ── */
+  function injectStyles() {
+    if (document.getElementById('wf-transition-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'wf-transition-styles';
+    style.textContent = `
+      #wf-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #0a0a0a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        transform: translateY(100%);
+        will-change: transform;
+      }
+
+      #wf-transition.entering {
+        animation: wf-slide-in ${DURATION_EXIT}ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+      }
+
+      #wf-transition.leaving {
+        animation: wf-slide-out ${DURATION_ENTER}ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+      }
+
+      @keyframes wf-slide-in {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0%);   }
+      }
+
+      @keyframes wf-slide-out {
+        from { transform: translateY(0%);    }
+        to   { transform: translateY(-100%); }
+      }
+
+      .wf-t-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(200,255,0,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(200,255,0,0.04) 1px, transparent 1px);
+        background-size: 60px 60px;
+      }
+
+      .wf-t-bar {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 2px;
+        background: #c8ff00;
+        transform-origin: left;
+        transform: scaleX(0);
+        animation: wf-bar-fill ${DURATION_EXIT + DURATION_HOLD}ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+      }
+
+      @keyframes wf-bar-fill {
+        0%   { transform: scaleX(0); opacity: 1; }
+        80%  { transform: scaleX(1); opacity: 1; }
+        100% { transform: scaleX(1); opacity: 0.4; }
+      }
+
+      .wf-t-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        opacity: 0;
+        animation: wf-logo-pop 0.25s ease-out ${DURATION_EXIT * 0.5}ms forwards;
+      }
+
+      .wf-t-logo span {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #c8ff00;
+      }
+
+      @keyframes wf-logo-pop {
+        from { opacity: 0; transform: scale(0.92); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+
+      /* Page content fade on exit */
+      body.wf-exiting > *:not(#wf-transition) {
+        pointer-events: none;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  /* ── Navigate with transition ── */
+  function navigateTo(href) {
+    injectStyles();
+    const overlay = buildOverlay();
+
+    document.body.classList.add('wf-exiting');
+
+    // Slide overlay up from bottom
+    overlay.classList.add('entering');
+
+    // After cover + hold, navigate
+    setTimeout(() => {
+      window.location.href = href;
+    }, DURATION_EXIT + DURATION_HOLD);
+  }
+
+  /* ── Intercept internal link clicks ── */
+  function interceptLinks() {
+    document.addEventListener('click', function (e) {
+      const anchor = e.target.closest('a');
+      if (!anchor) return;
+
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+
+      // Skip: hash-only links, external links, new-tab links, mailto/tel
+      if (
+        href.startsWith('#') ||
+        href.startsWith('http') ||
+        href.startsWith('mailto') ||
+        href.startsWith('tel') ||
+        anchor.target === '_blank' ||
+        e.ctrlKey || e.metaKey || e.shiftKey
+      ) return;
+
+      // Skip anchor links to sections on same page (index.html#about etc)
+      const url = new URL(href, window.location.href);
+      if (url.pathname === window.location.pathname && url.hash) return;
+
+      e.preventDefault();
+      navigateTo(href);
+    });
+  }
+
+  /* ── Enter animation on page load ── */
+  function playEnterAnimation() {
+    // Only animate if arriving from an internal navigation
+    // We use sessionStorage to pass a flag
+    if (!sessionStorage.getItem('wf-navigating')) return;
+    sessionStorage.removeItem('wf-navigating');
+
+    injectStyles();
+    const overlay = buildOverlay();
+    overlay.style.transform = 'translateY(0%)'; // start covering the screen
+    overlay.style.pointerEvents = 'none';
+
+    // Slight delay then slide up and away
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        overlay.classList.add('leaving');
+        setTimeout(() => overlay.remove(), DURATION_ENTER);
+      }, 60);
+    });
+  }
+
+  /* ── Set the flag before leaving ── */
+  function setNavigatingFlag() {
+    document.addEventListener('click', function (e) {
+      const anchor = e.target.closest('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || anchor.target === '_blank') return;
+      const url = new URL(href, window.location.href);
+      if (url.pathname === window.location.pathname && url.hash) return;
+      sessionStorage.setItem('wf-navigating', '1');
+    }, true); // capture phase — runs before our navigate handler
+  }
+
+  /* ── Init ── */
+  injectStyles();
+  interceptLinks();
+  setNavigatingFlag();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', playEnterAnimation);
+  } else {
+    playEnterAnimation();
+  }
+})();
+
+</script>
+<div id="tweaks-root"></div>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#c8ff00",
+  "showGrid": true,
+  "cursorTrail": 0.15,
+  "gridOpacity": 0.05,
+  "showScrollIndicator": true,
+  "heroOutlineText": true
+}/*EDITMODE-END*/;
+
+function TweaksApp() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    // Accent color
+    document.documentElement.style.setProperty('--accent', tweaks.accentColor);
+    // Grid visibility
+    const grids = document.querySelectorAll('.hero-grid, .wf-t-grid');
+    grids.forEach(g => g.style.opacity = tweaks.showGrid ? '1' : '0');
+    // Grid opacity via custom prop
+    document.documentElement.style.setProperty(
+      '--grid-line-opacity', tweaks.gridOpacity
+    );
+    // Cursor lerp speed — write to global
+    window.__cursorLerp = tweaks.cursorTrail;
+    // Scroll indicator
+    const si = document.querySelector('.scroll-indicator');
+    if (si) si.style.display = tweaks.showScrollIndicator ? '' : 'none';
+    // Hero outline text
+    const outline = document.querySelector('.hero-title span');
+    if (outline) {
+      outline.style.webkitTextStroke = tweaks.heroOutlineText
+        ? '1px rgba(240,236,227,0.35)' : '0px';
+      outline.style.color = tweaks.heroOutlineText ? 'transparent' : 'var(--fg)';
+    }
+  }, [tweaks]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Brand">
+        <TweakColor label="Accent colour" value={tweaks.accentColor}
+          onChange={v => setTweak('accentColor', v)} />
+      </TweakSection>
+      <TweakSection label="Hero">
+        <TweakToggle label="Grid overlay" value={tweaks.showGrid}
+          onChange={v => setTweak('showGrid', v)} />
+        <TweakSlider label="Grid opacity" min={0.01} max={0.1} step={0.005}
+          value={tweaks.gridOpacity} onChange={v => setTweak('gridOpacity', v)} />
+        <TweakToggle label="Outline title text" value={tweaks.heroOutlineText}
+          onChange={v => setTweak('heroOutlineText', v)} />
+        <TweakToggle label="Scroll indicator" value={tweaks.showScrollIndicator}
+          onChange={v => setTweak('showScrollIndicator', v)} />
+      </TweakSection>
+      <TweakSection label="Cursor">
+        <TweakSlider label="Ring trail speed" min={0.04} max={0.4} step={0.01}
+          value={tweaks.cursorTrail} onChange={v => setTweak('cursorTrail', v)} />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
+</script>
 </body>
 </html>

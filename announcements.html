@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Announcements &mdash; Wireframe Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080808; --fg: #f0ece3; --accent: #c8ff00;
+    --muted: #4a4a4a; --muted-hi: #777; --border: #1a1a1a;
+    --card-bg: #0e0e0e; --mono: 'Space Mono', monospace; --sans: 'Syne', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); overflow-x: hidden; cursor: none; }
+
+  #cursor-dot { position:fixed; width:5px; height:5px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:99999; top:0; left:0; will-change:transform; transition:width .18s,height .18s,opacity .2s,background .2s; }
+  #cursor-ring { position:fixed; width:34px; height:34px; border:1.5px solid rgba(200,255,0,.45); border-radius:50%; pointer-events:none; z-index:99998; top:0; left:0; will-change:transform; transition:width .22s cubic-bezier(.34,1.56,.64,1),height .22s cubic-bezier(.34,1.56,.64,1),border-color .2s,opacity .25s,border-radius .22s; }
+  #cursor-label { position:fixed; top:0; left:0; pointer-events:none; z-index:99997; font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); white-space:nowrap; opacity:0; transition:opacity .18s; will-change:transform; }
+  body.cursor-hover #cursor-dot { width:6px; height:6px; }
+  body.cursor-hover #cursor-ring { width:52px; height:52px; border-color:rgba(200,255,0,.75); border-radius:6px; }
+  body.cursor-hover #cursor-label { opacity:1; }
+  body.cursor-down #cursor-dot { width:3px; height:3px; background:#fff; }
+  body.cursor-down #cursor-ring { width:24px; height:24px; border-color:rgba(200,255,0,.9); border-radius:50%; }
+  body.cursor-text #cursor-ring { width:3px; height:28px; border-radius:2px; border-color:var(--accent); border-width:0; background:var(--accent); }
+  a, button, input, textarea { cursor: none; }
+
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.25rem 3rem; border-bottom:1px solid var(--border);
+    background:rgba(8,8,8,.94); backdrop-filter:blur(12px);
+  }
+  .nav-logo { font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; text-decoration:none; }
+  .nav-links { display:flex; gap:2.5rem; list-style:none; }
+  .nav-links a { font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-hi); text-decoration:none; transition:color .2s; position:relative; padding-bottom:2px; }
+  .nav-links a::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .3s cubic-bezier(.76,0,.24,1); }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+  .nav-links a.active { color:var(--fg); }
+
+  .page-hero {
+    min-height: 50vh;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding: 9rem 3rem 5rem;
+    border-bottom: 1px solid var(--border);
+    position:relative; overflow:hidden;
+  }
+  .hero-grid {
+    position:absolute; inset:0;
+    background-image: linear-gradient(rgba(200,255,0,.035) 1px, transparent 1px), linear-gradient(90deg,rgba(200,255,0,.035) 1px,transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 90% at 50% 50%, #000 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 90% at 50% 50%, #000 0%, transparent 100%);
+    pointer-events:none;
+  }
+  .page-eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1.5rem; display:flex; align-items:center; gap:12px; }
+  .page-eyebrow::before { content:''; display:inline-block; width:24px; height:1px; background:var(--accent); }
+  .page-title { font-size:clamp(3rem,9vw,7rem); font-weight:800; line-height:.88; letter-spacing:-.035em; margin-bottom:2rem; }
+  .page-title span { color:transparent; -webkit-text-stroke:1px rgba(240,236,227,.35); }
+  .page-sub { max-width:520px; font-size:15px; color:var(--muted-hi); line-height:1.75; text-wrap:pretty; }
+
+  .page-content { max-width:960px; margin:0 auto; padding:6rem 3rem; }
+
+  .section-label { font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:3rem; display:flex; align-items:center; gap:1rem; }
+  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--border),transparent); }
+
+  .feed-list { display:flex; flex-direction:column; border:1px solid var(--border); min-height:200px; }
+  .feed-entry {
+    background:var(--card-bg); padding:2rem 2rem 2rem 3.5rem;
+    display:grid; grid-template-columns:180px 1fr auto; gap:2.5rem;
+    align-items:start; text-decoration:none; color:var(--fg);
+    transition:background .2s; border-bottom:1px solid var(--border);
+    position:relative;
+  }
+  .feed-entry:last-child { border-bottom:none; }
+  .feed-entry::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:transparent; transition:background .2s; }
+  .feed-entry:hover { background:#111; }
+  .feed-entry:hover::before { background:var(--accent); }
+  .feed-meta { display:flex; flex-direction:column; gap:8px; padding-top:2px; }
+  .feed-date { font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.1em; }
+  .feed-tag { display:inline-block; font-family:var(--mono); font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:3px 8px; border:1px solid var(--accent); color:var(--accent); width:fit-content; }
+  .feed-title { font-size:15px; font-weight:700; margin-bottom:.4rem; letter-spacing:-.01em; }
+  .feed-body { font-size:13px; color:var(--muted-hi); line-height:1.65; text-wrap:pretty; }
+  .feed-arrow { font-size:14px; color:var(--muted); padding-top:2px; transition:color .2s,transform .2s; align-self:center; }
+  .feed-entry:hover .feed-arrow { color:var(--accent); transform:translateX(4px); }
+  .feed-state { background:var(--card-bg); padding:3.5rem 2rem; font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); text-align:center; display:flex; align-items:center; justify-content:center; gap:12px; }
+  .feed-state.loading::before { content:''; width:7px; height:7px; border:1px solid var(--accent); border-top-color:transparent; border-radius:50%; animation:spin .8s linear infinite; flex-shrink:0; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .newsletter-section {
+    margin-top:5rem; padding-top:4rem; border-top:1px solid var(--border);
+    display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center;
+  }
+  .newsletter-title { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:800; line-height:1.1; letter-spacing:-.02em; margin-bottom:1rem; }
+  .newsletter-sub { font-size:14px; color:var(--muted-hi); line-height:1.75; text-wrap:pretty; }
+  .newsletter-form { display:flex; border:1px solid var(--border); transition:border-color .2s; margin-bottom:.75rem; }
+  .newsletter-form:focus-within { border-color:var(--accent); }
+  .newsletter-input { flex:1; background:var(--card-bg); border:none; outline:none; padding:1rem 1.25rem; font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--fg); }
+  .newsletter-input::placeholder { color:var(--muted); }
+  .newsletter-submit { background:var(--accent); color:#000; border:none; padding:1rem 1.5rem; font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; cursor:none; transition:background .2s; white-space:nowrap; }
+  .newsletter-submit:hover { background:#b8ef00; }
+  .newsletter-submit:disabled { opacity:.5; }
+  .newsletter-success { font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); padding:1rem 0; margin-bottom:.75rem; display:none; }
+  .newsletter-note { font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--muted); }
+
+  footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; align-items:center; justify-content:space-between; }
+  .footer-logo { font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:var(--muted); }
+  .footer-copy { font-family:var(--mono); font-size:10px; color:var(--muted); }
+
+  .fade-in { opacity:0; transform:translateY(28px); transition:opacity .75s ease,transform .75s ease; }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+
+  @media (max-width:900px) {
+    nav { padding:1rem 1.5rem; } .nav-links { gap:1.5rem; }
+    .page-hero { padding:7rem 1.5rem 3.5rem; }
+    .page-content { padding:3.5rem 1.5rem; }
+    .feed-entry { grid-template-columns:1fr; gap:.6rem; padding-left:2rem; }
+    .feed-arrow { display:none; }
+    .newsletter-section { grid-template-columns:1fr; gap:2.5rem; }
+    footer { flex-direction:column; gap:.5rem; text-align:center; }
+  }
+</style>
+</head>
+<body>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-label"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">WF / Studios</a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#games">Games</a></li>
+    <li><a href="announcements.html" class="active">Announcements</a></li>
+    <li><a href="index.html#philosophy">Philosophy</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="hero-grid"></div>
+  <div class="page-eyebrow">Wireframe Studios</div>
+  <h1 class="page-title">Announce<span>ments</span></h1>
+  <p class="page-sub">Studio news, game reveals, and updates from the team — posted to our Google Group.</p>
+</div>
+
+<div class="page-content">
+  <div class="section-label">All Announcements</div>
+  <div class="feed-list fade-in" id="announceList">
+    <div class="feed-state loading">Fetching announcements</div>
+  </div>
+
+  <div class="newsletter-section fade-in">
+    <div>
+      <div class="newsletter-title">Stay in the Loop</div>
+      <p class="newsletter-sub">Get studio updates, game announcements, and dev insights delivered to your inbox. No spam — just signal.</p>
+    </div>
+    <div>
+      <form class="newsletter-form" id="newsletterForm">
+        <input class="newsletter-input" type="email" placeholder="your@email.com" required autocomplete="email">
+        <button class="newsletter-submit" type="submit">Subscribe &rarr;</button>
+      </form>
+      <div class="newsletter-success" id="newsletterSuccess">&#10003; You're subscribed — welcome aboard.</div>
+      <div class="newsletter-note">Powered by Google Groups &mdash; unsubscribe any time</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Wireframe Studios &mdash; Est. 2025</div>
+  <div class="footer-copy">&copy; 2025 Wireframe Studios. All rights reserved.</div>
+</footer>
+
+<script>
+  (function () {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    const label = document.getElementById('cursor-label');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    const LERP_DEFAULT = 0.15;
+    dot.style.opacity = '0'; ring.style.opacity = '0';
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.opacity = '1'; ring.style.opacity = '1'; });
+    (function loop() {
+      requestAnimationFrame(loop);
+      dot.style.transform = `translate(${mx - 2.5}px, ${my - 2.5}px)`;
+      const LERP = window.__cursorLerp || LERP_DEFAULT;
+      rx += (mx - rx) * LERP; ry += (my - ry) * LERP;
+      const rSize = parseInt(getComputedStyle(ring).width) / 2;
+      ring.style.transform = `translate(${rx - rSize}px, ${ry - rSize}px)`;
+      label.style.transform = `translate(${rx + 20}px, ${ry - 16}px)`;
+    })();
+    document.querySelectorAll('a, button').forEach(el => {
+      const tip = el.dataset.cursor || el.getAttribute('aria-label') || '';
+      el.addEventListener('mouseenter', () => { document.body.classList.add('cursor-hover'); if (tip) label.textContent = tip; });
+      el.addEventListener('mouseleave', () => { document.body.classList.remove('cursor-hover'); label.textContent = ''; });
+    });
+    document.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-text'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-text'));
+    });
+    document.addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
+    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-down'));
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+  })();
+
+  const observer = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.12});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  const DISCUSSIONS_URL = 'https://github.com/alexbriggs08/wireframe-studios/discussions.atom';
+  async function loadAnnouncements() {
+    const list = document.getElementById('announceList');
+    try {
+      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(DISCUSSIONS_URL)}`);
+      if (!res.ok) throw new Error();
+      const xml = await res.text();
+      const doc = new DOMParser().parseFromString(xml, 'application/xml');
+      const entries = Array.from(doc.querySelectorAll('entry'));
+      if (!entries.length) { list.innerHTML = '<div class="feed-state">No announcements yet — check back soon.</div>'; return; }
+      list.innerHTML = entries.map(e => {
+        const title = e.querySelector('title')?.textContent || 'Untitled';
+        const link = e.querySelector('link')?.getAttribute('href') || '#';
+        const date = new Date(e.querySelector('published')?.textContent).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+        const raw = e.querySelector('content')?.textContent || '';
+        const body = raw.replace(/<[^>]+>/g,'').trim();
+        return `<a class="feed-entry" href="${link}" target="_blank" rel="noopener">
+          <div class="feed-meta"><div class="feed-date">${date}</div><div class="feed-tag">Announcement</div></div>
+          <div><div class="feed-title">${title}</div>${body ? `<div class="feed-body">${body}</div>` : ''}</div>
+          <div class="feed-arrow">&#8594;</div>
+        </a>`;
+      }).join('');
+    } catch {
+      list.innerHTML = `<div class="feed-state">Couldn't load — <a href="https://github.com/alexbriggs08/wireframe-studios/discussions" target="_blank" style="color:var(--accent)">view on GitHub</a></div>`;
+    }
+  }
+  loadAnnouncements();
+
+  const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSffVH2Cnlgtkz74hCpxY2iiepEv8kJN2I4ht2X_7BxcfhGtjQ/formResponse';
+  const GOOGLE_FORM_EMAIL_ENTRY = 'entry.1400290315';
+  document.getElementById('newsletterForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target; const btn = form.querySelector('.newsletter-submit');
+    const success = document.getElementById('newsletterSuccess');
+    const email = form.querySelector('input[type="email"]').value;
+    btn.disabled = true; btn.textContent = 'Subscribing…';
+    try { const b = new FormData(); b.append(GOOGLE_FORM_EMAIL_ENTRY, email); await fetch(GOOGLE_FORM_ACTION, {method:'POST',body:b,mode:'no-cors'}); } catch(_){}
+    form.style.display = 'none'; success.style.display = 'block';
+  });
+</script>
+<script src="transition.js"></script>
+</body>
+</html>
