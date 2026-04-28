@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untitled Game II &mdash; Wireframe Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080808; --fg: #f0ece3; --accent: #c8ff00;
+    --muted: #4a4a4a; --muted-hi: #777; --border: #1a1a1a;
+    --card-bg: #0e0e0e; --mono: 'Space Mono', monospace; --sans: 'Syne', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); overflow-x: hidden; cursor: none; }
+
+  #cursor-dot { position:fixed; width:5px; height:5px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:99999; top:0; left:0; will-change:transform; transition:width .18s,height .18s,opacity .2s,background .2s; }
+  #cursor-ring { position:fixed; width:34px; height:34px; border:1.5px solid rgba(200,255,0,.45); border-radius:50%; pointer-events:none; z-index:99998; top:0; left:0; will-change:transform; transition:width .22s cubic-bezier(.34,1.56,.64,1),height .22s cubic-bezier(.34,1.56,.64,1),border-color .2s,opacity .25s,border-radius .22s; }
+  #cursor-label { position:fixed; top:0; left:0; pointer-events:none; z-index:99997; font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); white-space:nowrap; opacity:0; transition:opacity .18s; will-change:transform; }
+  body.cursor-hover #cursor-dot { width:6px; height:6px; }
+  body.cursor-hover #cursor-ring { width:52px; height:52px; border-color:rgba(200,255,0,.75); border-radius:6px; }
+  body.cursor-hover #cursor-label { opacity:1; }
+  body.cursor-down #cursor-dot { width:3px; height:3px; background:#fff; }
+  body.cursor-down #cursor-ring { width:24px; height:24px; border-color:rgba(200,255,0,.9); border-radius:50%; }
+  body.cursor-text #cursor-ring { width:3px; height:28px; border-radius:2px; border-color:var(--accent); border-width:0; background:var(--accent); }
+  a, button, input, textarea { cursor: none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1.25rem 3rem; border-bottom:1px solid var(--border); background:rgba(8,8,8,.94); backdrop-filter:blur(12px); }
+  .nav-logo { font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; text-decoration:none; }
+  .nav-links { display:flex; gap:2.5rem; list-style:none; }
+  .nav-links a { font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-hi); text-decoration:none; transition:color .2s; position:relative; padding-bottom:2px; }
+  .nav-links a::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .3s cubic-bezier(.76,0,.24,1); }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+  .nav-links a.active { color:var(--accent); }
+
+  .game-hero { min-height:88vh; display:flex; flex-direction:column; justify-content:flex-end; padding:9rem 3rem 5rem; position:relative; overflow:hidden; border-bottom:1px solid var(--border); }
+  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(200,255,0,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,.03) 1px,transparent 1px); background-size:56px 56px; animation:gridShift 24s linear infinite; mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 75%,transparent 100%); -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 75%,transparent 100%); }
+  @keyframes gridShift { from { background-position:0 0; } to { background-position:56px 56px; } }
+
+  .hero-canvas { position:absolute; top:50%; right:5%; transform:translateY(-50%); opacity:.1; animation:float 9s ease-in-out infinite; pointer-events:none; }
+  @keyframes float { 0%,100% { transform:translateY(-50%) rotate(0deg); } 50% { transform:translateY(-54%) rotate(-1deg); } }
+  .hero-canvas .c1 { animation:cp 6s ease-in-out infinite; }
+  .hero-canvas .c2 { animation:cp 6s ease-in-out infinite 1s; }
+  @keyframes cp { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+  .back-link { font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted-hi); text-decoration:none; display:inline-flex; align-items:center; gap:8px; margin-bottom:3rem; position:relative; transition:color .2s; }
+  .back-link:hover { color:var(--accent); }
+
+  .game-eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; position:relative; display:flex; align-items:center; gap:12px; }
+  .game-eyebrow::before { content:''; display:inline-block; width:24px; height:1px; background:var(--accent); }
+
+  .game-hero-title { font-size:clamp(3.5rem,9vw,8.5rem); font-weight:800; line-height:.88; letter-spacing:-.035em; margin-bottom:2rem; position:relative; }
+  .game-hero-title span { display:block; color:transparent; -webkit-text-stroke:1px rgba(240,236,227,.35); }
+
+  .status-pill { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted-hi); border:1px solid var(--border); padding:6px 14px; margin-bottom:2rem; width:fit-content; }
+  .status-pill::before { content:''; width:5px; height:5px; background:var(--muted); border-radius:50%; }
+
+  .game-hero-sub { max-width:560px; font-size:17px; color:var(--muted-hi); line-height:1.75; position:relative; text-wrap:pretty; }
+
+  .game-content { max-width:1200px; margin:0 auto; padding:6rem 3rem; }
+  .content-grid { display:grid; grid-template-columns:2fr 1fr; gap:5rem; align-items:start; }
+
+  .section-label { font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:2rem; display:flex; align-items:center; gap:1rem; }
+  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--border),transparent); max-width:120px; }
+
+  .body-text { font-size:15px; color:var(--muted-hi); line-height:1.85; text-wrap:pretty; }
+  .body-text p+p { margin-top:1.4rem; }
+  .body-text strong { color:var(--fg); font-weight:600; }
+
+  .sidebar { display:flex; flex-direction:column; gap:1px; background:var(--border); border:1px solid var(--border); position:sticky; top:6rem; }
+  .sidebar-item { background:var(--card-bg); padding:1.25rem 1.5rem; transition:background .2s; }
+  .sidebar-item:hover { background:#131313; }
+  .sidebar-label { font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem; }
+  .sidebar-value { font-size:14px; font-weight:600; color:var(--fg); }
+  .sidebar-value.muted { color:var(--muted-hi); }
+
+  /* Screenshots */
+  .screenshots { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .screenshot-grid { display:grid; grid-template-columns:2fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); }
+  .screenshot-side { display:flex; flex-direction:column; gap:1px; }
+  .screenshot-placeholder { background:var(--card-bg); aspect-ratio:16/9; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; color:#2a2a2a; font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; position:relative; overflow:hidden; transition:background .3s; }
+  .screenshot-placeholder::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(200,255,0,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,.012) 1px,transparent 1px); background-size:28px 28px; }
+  .screenshot-placeholder:hover { background:#121212; }
+  .screenshot-placeholder.small { flex:1; min-height:80px; font-size:9px; }
+
+  /* Vision */
+  .vision { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .vision-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .vision-item { background:var(--card-bg); padding:2.5rem; transition:background .25s; position:relative; overflow:hidden; }
+  .vision-item::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .35s cubic-bezier(.76,0,.24,1); }
+  .vision-item:hover { background:#131313; }
+  .vision-item:hover::before { transform:scaleX(1); }
+  .vision-num { font-family:var(--mono); font-size:9px; color:var(--accent); letter-spacing:.16em; margin-bottom:1rem; }
+  .vision-title { font-size:.95rem; font-weight:700; margin-bottom:.6rem; }
+  .vision-body { font-size:13px; color:var(--muted-hi); line-height:1.65; text-wrap:pretty; }
+
+  /* Roadmap */
+  .roadmap { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .roadmap-list { display:flex; flex-direction:column; border:1px solid var(--border); }
+  .roadmap-item { background:var(--card-bg); padding:1.5rem 2rem 1.5rem 3.5rem; display:grid; grid-template-columns:180px 1fr auto; gap:2rem; align-items:center; border-bottom:1px solid var(--border); position:relative; transition:background .2s; }
+  .roadmap-item:last-child { border-bottom:none; }
+  .roadmap-item::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:transparent; transition:background .2s; }
+  .roadmap-item:hover { background:#111; }
+  .roadmap-item:hover::before { background:var(--accent); }
+  .roadmap-phase { font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  .roadmap-name { font-size:14px; font-weight:600; }
+  .roadmap-status { font-family:var(--mono); font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:5px 10px; border:1px solid var(--border); color:var(--muted-hi); white-space:nowrap; transition:border-color .2s,color .2s; }
+  .roadmap-status.done { border-color:var(--accent); color:var(--accent); }
+
+  footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; align-items:center; justify-content:space-between; }
+  .footer-logo { font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:var(--muted); }
+  .footer-copy { font-family:var(--mono); font-size:10px; color:var(--muted); }
+
+  .fade-in { opacity:0; transform:translateY(24px); transition:opacity .75s ease,transform .75s ease; }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+  .fade-in[data-delay="1"] { transition-delay:.12s; }
+  .fade-in[data-delay="2"] { transition-delay:.24s; }
+
+  @media (max-width:900px) {
+    nav { padding:1rem 1.5rem; } .nav-links { gap:1.5rem; }
+    .game-hero { padding:7.5rem 1.5rem 3.5rem; } .hero-canvas { display:none; }
+    .game-content { padding:3.5rem 1.5rem; }
+    .content-grid { grid-template-columns:1fr; gap:3rem; }
+    .sidebar { position:static; }
+    .screenshot-grid { grid-template-columns:1fr; }
+    .vision-grid { grid-template-columns:1fr; }
+    .roadmap-item { grid-template-columns:1fr; gap:.5rem; padding-left:2rem; }
+    footer { flex-direction:column; gap:.5rem; text-align:center; }
+  }
+</style>
+</head>
+<body>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-label"></div>
+
+<nav>
+  <a href="../index.html" class="nav-logo">WF / Studios</a>
+  <ul class="nav-links">
+    <li><a href="../index.html#about">About</a></li>
+    <li><a href="../index.html#games" class="active">Games</a></li>
+    <li><a href="../index.html#philosophy">Philosophy</a></li>
+    <li><a href="../index.html#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="game-hero">
+  <div class="hero-grid"></div>
+
+  <svg class="hero-canvas" width="500" height="500" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="90" stroke="#c8ff00" stroke-width="0.8" class="c1"/>
+    <circle cx="100" cy="100" r="65" stroke="#c8ff00" stroke-width="0.5"/>
+    <circle cx="100" cy="100" r="40" stroke="#c8ff00" stroke-width="0.4" class="c2"/>
+    <circle cx="100" cy="100" r="16" stroke="#c8ff00" stroke-width="1"/>
+    <line x1="100" y1="10" x2="100" y2="190" stroke="#c8ff00" stroke-width="0.4" stroke-dasharray="4 4"/>
+    <line x1="10" y1="100" x2="190" y2="100" stroke="#c8ff00" stroke-width="0.4" stroke-dasharray="4 4"/>
+    <line x1="26" y1="26" x2="174" y2="174" stroke="#c8ff00" stroke-width="0.3"/>
+    <line x1="174" y1="26" x2="26" y2="174" stroke="#c8ff00" stroke-width="0.3"/>
+    <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" stroke="#c8ff00" stroke-width="0.5" fill="none" class="c1"/>
+    <rect x="75" y="75" width="50" height="50" stroke="#c8ff00" stroke-width="0.5" transform="rotate(45 100 100)"/>
+  </svg>
+
+  <a href="../index.html#games" class="back-link">&larr; All Games</a>
+  <div class="game-eyebrow">Project 02 &mdash; Source 2 / s&amp;box</div>
+  <h1 class="game-hero-title">Untitled<span>Game II</span></h1>
+  <div class="status-pill">Planned</div>
+  <p class="game-hero-sub">Our second project — built on s&box and the Source 2 engine. Taking everything learned from building from scratch and applying it inside a professional-grade modern engine.</p>
+</div>
+
+<div class="game-content">
+  <div class="content-grid fade-in">
+    <div>
+      <div class="section-label">About the Game</div>
+      <div class="body-text">
+        <p>After Protocol, we'll have a deep understanding of how game systems work at the lowest level. Untitled Game II is where we take that knowledge and work inside <strong>s&box on the Source 2 engine</strong> — one of the most capable modern engines available.</p>
+        <p>The goal here isn't to use an engine as a crutch. It's to leverage professional tools with the clarity of someone who built those tools from scratch themselves. The jump from raw C++ to a full engine is massive in terms of capability — and we intend to use every bit of it.</p>
+        <p>This project is still in early vision. Details on genre, mechanics, and setting will be revealed as Protocol progresses. What we know is that it will be ambitious, finished, and worth your time.</p>
+      </div>
+
+      <div class="screenshots fade-in" data-delay="1">
+        <div class="section-label">Screenshots</div>
+        <div class="screenshot-grid">
+          <div class="screenshot-main">
+            <div class="screenshot-placeholder">
+              <svg width="56" height="56" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="1"/><circle cx="32" cy="32" r="14" stroke="#2a2a2a" stroke-width="0.8"/><line x1="32" y1="4" x2="32" y2="60" stroke="#2a2a2a" stroke-width="0.6" stroke-dasharray="3 3"/><line x1="4" y1="32" x2="60" y2="32" stroke="#2a2a2a" stroke-width="0.6" stroke-dasharray="3 3"/></svg>
+              <span>Concept Art Coming Soon</span>
+            </div>
+          </div>
+          <div class="screenshot-side">
+            <div class="screenshot-placeholder small"><svg width="36" height="36" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="1"/><circle cx="32" cy="32" r="10" stroke="#2a2a2a" stroke-width="0.8"/></svg><span>Concept</span></div>
+            <div class="screenshot-placeholder small"><svg width="36" height="36" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="1"/><circle cx="32" cy="32" r="10" stroke="#2a2a2a" stroke-width="0.8"/></svg><span>Concept</span></div>
+            <div class="screenshot-placeholder small"><svg width="36" height="36" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="1"/><circle cx="32" cy="32" r="10" stroke="#2a2a2a" stroke-width="0.8"/></svg><span>Concept</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vision fade-in" data-delay="1">
+        <div class="section-label">Development Goals</div>
+        <div class="vision-grid">
+          <div class="vision-item"><div class="vision-num">GOAL / 01</div><div class="vision-title">Engine Mastery</div><div class="vision-body">Learn Source 2 and s&box deeply — not just how to use it, but how it works and why it was designed the way it was.</div></div>
+          <div class="vision-item"><div class="vision-num">GOAL / 02</div><div class="vision-title">Larger Scope</div><div class="vision-body">With engine support, push scope further — more complex worlds, better visuals, richer systems than Protocol allows.</div></div>
+          <div class="vision-item"><div class="vision-num">GOAL / 03</div><div class="vision-title">Multiplayer Ready</div><div class="vision-body">s&box is built for multiplayer. This project will explore networked gameplay in ways raw C++ makes extremely difficult.</div></div>
+          <div class="vision-item"><div class="vision-num">GOAL / 04</div><div class="vision-title">Ship Ready</div><div class="vision-body">A polished, complete product suitable for public release — not just a tech demo or learning exercise.</div></div>
+        </div>
+      </div>
+
+      <div class="roadmap fade-in" data-delay="2">
+        <div class="section-label">Roadmap</div>
+        <div class="roadmap-list">
+          <div class="roadmap-item"><div class="roadmap-phase">Phase 00</div><div class="roadmap-name">Complete Protocol first</div><div class="roadmap-status done">Prerequisite</div></div>
+          <div class="roadmap-item"><div class="roadmap-phase">Phase 01</div><div class="roadmap-name">s&box fundamentals &amp; prototyping</div><div class="roadmap-status">Upcoming</div></div>
+          <div class="roadmap-item"><div class="roadmap-phase">Phase 02</div><div class="roadmap-name">Core loop &amp; mechanics</div><div class="roadmap-status">Upcoming</div></div>
+          <div class="roadmap-item"><div class="roadmap-phase">Phase 03</div><div class="roadmap-name">Alpha build</div><div class="roadmap-status">Upcoming</div></div>
+          <div class="roadmap-item"><div class="roadmap-phase">Phase 04</div><div class="roadmap-name">Polish &amp; release</div><div class="roadmap-status">Upcoming</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar-item"><div class="sidebar-label">Status</div><div class="sidebar-value muted">Planned</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Engine</div><div class="sidebar-value">Source 2 / s&amp;box</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Language</div><div class="sidebar-value">C# / s&amp;box API</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Platform</div><div class="sidebar-value">PC</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Genre</div><div class="sidebar-value">TBD</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Multiplayer</div><div class="sidebar-value">Planned</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Studio</div><div class="sidebar-value">Wireframe Studios</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Starts After</div><div class="sidebar-value">Protocol ships</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Wireframe Studios &mdash; Est. 2025</div>
+  <div class="footer-copy">&copy; 2025 Wireframe Studios. All rights reserved.</div>
+</footer>
+
+<script>
+  (function () {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    const label = document.getElementById('cursor-label');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    const LERP_DEFAULT = 0.15;
+    dot.style.opacity = '0'; ring.style.opacity = '0';
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.opacity = '1'; ring.style.opacity = '1'; });
+    (function loop() {
+      requestAnimationFrame(loop);
+      dot.style.transform = `translate(${mx - 2.5}px, ${my - 2.5}px)`;
+      const LERP = window.__cursorLerp || LERP_DEFAULT;
+      rx += (mx - rx) * LERP; ry += (my - ry) * LERP;
+      const rSize = parseInt(getComputedStyle(ring).width) / 2;
+      ring.style.transform = `translate(${rx - rSize}px, ${ry - rSize}px)`;
+      label.style.transform = `translate(${rx + 20}px, ${ry - 16}px)`;
+    })();
+    document.querySelectorAll('a, button').forEach(el => {
+      const tip = el.dataset.cursor || el.getAttribute('aria-label') || '';
+      el.addEventListener('mouseenter', () => { document.body.classList.add('cursor-hover'); if (tip) label.textContent = tip; });
+      el.addEventListener('mouseleave', () => { document.body.classList.remove('cursor-hover'); label.textContent = ''; });
+    });
+    document.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-text'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-text'));
+    });
+    document.addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
+    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-down'));
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+  })();
+
+  const observer = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.1});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+<script src="transition.js"></script>
+</body>
+</html>

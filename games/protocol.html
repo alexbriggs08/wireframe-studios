@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocol &mdash; Wireframe Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080808; --fg: #f0ece3; --accent: #c8ff00;
+    --muted: #4a4a4a; --muted-hi: #777; --border: #1a1a1a;
+    --card-bg: #0e0e0e; --mono: 'Space Mono', monospace; --sans: 'Syne', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); overflow-x: hidden; cursor: none; }
+
+  #cursor-dot { position:fixed; width:5px; height:5px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:99999; top:0; left:0; will-change:transform; transition:width .18s,height .18s,opacity .2s,background .2s; }
+  #cursor-ring { position:fixed; width:34px; height:34px; border:1.5px solid rgba(200,255,0,.45); border-radius:50%; pointer-events:none; z-index:99998; top:0; left:0; will-change:transform; transition:width .22s cubic-bezier(.34,1.56,.64,1),height .22s cubic-bezier(.34,1.56,.64,1),border-color .2s,opacity .25s,border-radius .22s; }
+  #cursor-label { position:fixed; top:0; left:0; pointer-events:none; z-index:99997; font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); white-space:nowrap; opacity:0; transition:opacity .18s; will-change:transform; }
+  body.cursor-hover #cursor-dot { width:6px; height:6px; }
+  body.cursor-hover #cursor-ring { width:52px; height:52px; border-color:rgba(200,255,0,.75); border-radius:6px; }
+  body.cursor-hover #cursor-label { opacity:1; }
+  body.cursor-down #cursor-dot { width:3px; height:3px; background:#fff; }
+  body.cursor-down #cursor-ring { width:24px; height:24px; border-color:rgba(200,255,0,.9); border-radius:50%; }
+  body.cursor-text #cursor-ring { width:3px; height:28px; border-radius:2px; border-color:var(--accent); border-width:0; background:var(--accent); }
+  a, button, input, textarea { cursor: none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1.25rem 3rem; border-bottom:1px solid var(--border); background:rgba(8,8,8,.94); backdrop-filter:blur(12px); }
+  .nav-logo { font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; text-decoration:none; }
+  .nav-links { display:flex; gap:2.5rem; list-style:none; }
+  .nav-links a { font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-hi); text-decoration:none; transition:color .2s; position:relative; padding-bottom:2px; }
+  .nav-links a::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .3s cubic-bezier(.76,0,.24,1); }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+  .nav-links a.active { color:var(--accent); }
+
+  /* Hero */
+  .game-hero {
+    min-height: 88vh;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding: 9rem 3rem 5rem;
+    position:relative; overflow:hidden; border-bottom:1px solid var(--border);
+  }
+  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(200,255,0,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,.03) 1px,transparent 1px); background-size:56px 56px; animation:gridShift 24s linear infinite; mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 75%,transparent 100%); -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 75%,transparent 100%); }
+  @keyframes gridShift { from { background-position:0 0; } to { background-position:56px 56px; } }
+
+  .hero-canvas { position:absolute; top:50%; right:5%; transform:translateY(-50%); opacity:.1; animation:float 8s ease-in-out infinite; pointer-events:none; }
+  @keyframes float { 0%,100% { transform:translateY(-50%) rotate(0deg); } 50% { transform:translateY(-53%) rotate(1deg); } }
+  .hero-canvas .r1 { animation:rp 5s ease-in-out infinite; }
+  .hero-canvas .r2 { animation:rp 5s ease-in-out infinite .8s; }
+  @keyframes rp { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+  .back-link { font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted-hi); text-decoration:none; display:inline-flex; align-items:center; gap:8px; margin-bottom:3rem; position:relative; transition:color .2s; }
+  .back-link:hover { color:var(--accent); }
+
+  .game-eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; position:relative; display:flex; align-items:center; gap:12px; }
+  .game-eyebrow::before { content:''; display:inline-block; width:24px; height:1px; background:var(--accent); }
+
+  .game-hero-title { font-size:clamp(4rem,10vw,9.5rem); font-weight:800; line-height:.88; letter-spacing:-.035em; margin-bottom:2rem; position:relative; }
+  .game-hero-title span { color:transparent; -webkit-text-stroke:1px rgba(240,236,227,.35); }
+
+  .status-pill { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); border:1px solid var(--accent); padding:6px 14px; margin-bottom:2rem; position:relative; width:fit-content; }
+  .status-pill::before { content:''; width:5px; height:5px; background:var(--accent); border-radius:50%; animation:blink 1.2s steps(2,end) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+
+  .game-hero-sub { max-width:560px; font-size:17px; color:var(--muted-hi); line-height:1.75; position:relative; text-wrap:pretty; }
+
+  /* Content */
+  .game-content { max-width:1200px; margin:0 auto; padding:6rem 3rem; }
+  .content-grid { display:grid; grid-template-columns:2fr 1fr; gap:5rem; align-items:start; }
+
+  .section-label { font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:2rem; display:flex; align-items:center; gap:1rem; }
+  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--border),transparent); max-width:120px; }
+
+  .body-text { font-size:15px; color:var(--muted-hi); line-height:1.85; text-wrap:pretty; }
+  .body-text p+p { margin-top:1.4rem; }
+  .body-text strong { color:var(--fg); font-weight:600; }
+
+  /* Sidebar */
+  .sidebar { display:flex; flex-direction:column; gap:1px; background:var(--border); border:1px solid var(--border); position:sticky; top:6rem; }
+  .sidebar-item { background:var(--card-bg); padding:1.25rem 1.5rem; transition:background .2s; }
+  .sidebar-item:hover { background:#131313; }
+  .sidebar-label { font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem; }
+  .sidebar-value { font-size:14px; font-weight:600; color:var(--fg); }
+  .sidebar-value.accent { color:var(--accent); }
+
+  /* Screenshots */
+  .screenshots { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .screenshot-grid { display:grid; grid-template-columns:2fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); }
+  .screenshot-side { display:flex; flex-direction:column; gap:1px; }
+  .screenshot-placeholder {
+    background:var(--card-bg); aspect-ratio:16/9;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem;
+    color:#2a2a2a; font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    position:relative; overflow:hidden; transition:background .3s;
+  }
+  .screenshot-placeholder::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(200,255,0,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,.012) 1px,transparent 1px); background-size:28px 28px; }
+  .screenshot-placeholder:hover { background:#121212; }
+  .screenshot-placeholder.small { flex:1; min-height:80px; font-size:9px; }
+
+  /* Open Source */
+  .opensource { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .opensource-banner { display:flex; gap:2rem; align-items:flex-start; background:var(--card-bg); border:1px solid var(--accent); padding:2.5rem; margin-bottom:1px; position:relative; overflow:hidden; }
+  .opensource-banner::before { content:''; position:absolute; inset:0; background:rgba(200,255,0,.025); pointer-events:none; }
+  .opensource-icon { flex-shrink:0; padding-top:2px; }
+  .opensource-title { font-size:1.05rem; font-weight:700; color:var(--accent); margin-bottom:.75rem; }
+  .opensource-body { font-size:14px; color:var(--muted-hi); line-height:1.75; text-wrap:pretty; }
+  .opensource-perks { display:flex; flex-direction:column; gap:1px; background:var(--border); border:1px solid var(--border); border-top:none; margin-bottom:1.25rem; }
+  .opensource-perk { background:var(--card-bg); padding:1.5rem 2rem; display:flex; gap:1.25rem; align-items:flex-start; transition:background .2s; }
+  .opensource-perk:hover { background:#131313; }
+  .perk-icon { color:var(--accent); font-size:8px; padding-top:6px; flex-shrink:0; }
+  .perk-title { font-size:14px; font-weight:700; margin-bottom:.3rem; }
+  .perk-body { font-size:13px; color:var(--muted-hi); line-height:1.65; text-wrap:pretty; }
+
+  .github-cta { display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:#000; font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:13px 22px; text-decoration:none; font-weight:700; transition:background .2s,transform .2s; position:relative; overflow:hidden; }
+  .github-cta::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,.15); transform:translateX(-105%); transition:transform .35s cubic-bezier(.76,0,.24,1); }
+  .github-cta:hover::after { transform:translateX(0); }
+  .github-cta:hover { transform:translateY(-2px); }
+
+  /* Features */
+  .features { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .feature-item { background:var(--card-bg); padding:2rem; transition:background .25s; position:relative; overflow:hidden; }
+  .feature-item::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .35s cubic-bezier(.76,0,.24,1); }
+  .feature-item:hover { background:#131313; }
+  .feature-item:hover::before { transform:scaleX(1); }
+  .feature-num { font-family:var(--mono); font-size:9px; color:var(--accent); letter-spacing:.16em; margin-bottom:1rem; }
+  .feature-title { font-size:.95rem; font-weight:700; margin-bottom:.6rem; }
+  .feature-body { font-size:13px; color:var(--muted-hi); line-height:1.65; text-wrap:pretty; }
+
+  /* Devlog */
+  .devlog { margin-top:4.5rem; padding-top:4.5rem; border-top:1px solid var(--border); }
+  .devlog-entries { display:flex; flex-direction:column; gap:0; border:1px solid var(--border); }
+  .devlog-entry { background:var(--card-bg); padding:2rem 2rem 2rem 3.5rem; display:grid; grid-template-columns:160px 1fr; gap:2.5rem; align-items:start; border-bottom:1px solid var(--border); position:relative; transition:background .2s; }
+  .devlog-entry:last-child { border-bottom:none; }
+  .devlog-entry::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:transparent; transition:background .2s; }
+  .devlog-entry:hover { background:#111; }
+  .devlog-entry:hover::before { background:var(--accent); }
+  .devlog-date { font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.1em; padding-top:3px; }
+  .devlog-title { font-size:.95rem; font-weight:700; margin-bottom:.4rem; letter-spacing:-.01em; }
+  .devlog-body { font-size:13px; color:var(--muted-hi); line-height:1.65; text-wrap:pretty; }
+
+  footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; align-items:center; justify-content:space-between; }
+  .footer-logo { font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:var(--muted); }
+  .footer-copy { font-family:var(--mono); font-size:10px; color:var(--muted); }
+
+  .fade-in { opacity:0; transform:translateY(24px); transition:opacity .75s ease,transform .75s ease; }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+  .fade-in[data-delay="1"] { transition-delay:.12s; }
+  .fade-in[data-delay="2"] { transition-delay:.24s; }
+
+  @media (max-width:900px) {
+    nav { padding:1rem 1.5rem; } .nav-links { gap:1.5rem; }
+    .game-hero { padding:7.5rem 1.5rem 3.5rem; } .hero-canvas { display:none; }
+    .game-content { padding:3.5rem 1.5rem; }
+    .content-grid { grid-template-columns:1fr; gap:3rem; }
+    .sidebar { position:static; }
+    .screenshot-grid { grid-template-columns:1fr; }
+    .features-grid { grid-template-columns:1fr; }
+    .devlog-entry { grid-template-columns:1fr; gap:.5rem; padding-left:2rem; }
+    footer { flex-direction:column; gap:.5rem; text-align:center; }
+  }
+</style>
+</head>
+<body>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-label"></div>
+
+<nav>
+  <a href="../index.html" class="nav-logo">WF / Studios</a>
+  <ul class="nav-links">
+    <li><a href="../index.html#about">About</a></li>
+    <li><a href="../index.html#games" class="active">Games</a></li>
+    <li><a href="../index.html#philosophy">Philosophy</a></li>
+    <li><a href="../index.html#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="game-hero">
+  <div class="hero-grid"></div>
+
+  <svg class="hero-canvas" width="500" height="500" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="10" width="180" height="180" stroke="#c8ff00" stroke-width="0.8" class="r1"/>
+    <rect x="30" y="30" width="140" height="140" stroke="#c8ff00" stroke-width="0.5"/>
+    <rect x="50" y="50" width="100" height="100" stroke="#c8ff00" stroke-width="0.4"/>
+    <rect x="70" y="70" width="60" height="60" stroke="#c8ff00" stroke-width="0.4"/>
+    <line x1="10" y1="10" x2="190" y2="190" stroke="#c8ff00" stroke-width="0.4"/>
+    <line x1="190" y1="10" x2="10" y2="190" stroke="#c8ff00" stroke-width="0.4"/>
+    <line x1="100" y1="0" x2="100" y2="200" stroke="#c8ff00" stroke-width="0.3" stroke-dasharray="3 3"/>
+    <line x1="0" y1="100" x2="200" y2="100" stroke="#c8ff00" stroke-width="0.3" stroke-dasharray="3 3"/>
+    <circle cx="100" cy="100" r="70" stroke="#c8ff00" stroke-width="0.5" class="r2"/>
+    <circle cx="100" cy="100" r="40" stroke="#c8ff00" stroke-width="0.5" class="r1"/>
+    <circle cx="100" cy="100" r="8" stroke="#c8ff00" stroke-width="1"/>
+    <polygon points="100,20 160,60 160,140 100,180 40,140 40,60" stroke="#c8ff00" stroke-width="0.4" fill="none"/>
+  </svg>
+
+  <a href="../index.html#games" class="back-link">&larr; All Games</a>
+  <div class="game-eyebrow">Project 01 &mdash; C++</div>
+  <h1 class="game-hero-title">Proto<span>col</span></h1>
+  <div class="status-pill">In Development</div>
+  <p class="game-hero-sub">Immersive, atmospheric storytelling where player agency and survival mechanics combine to create a visceral and high-stakes experience of being a single and vulnerable entity within an indifferent universe.</p>
+</div>
+
+<div class="game-content">
+  <div class="content-grid fade-in">
+    <div>
+      <div class="section-label">About the Game</div>
+      <div class="body-text">
+        <p>Protocol is the first game from Wireframe Studios, built in <strong>C++ with RayLib</strong>. RayLib gives us a lean, minimal foundation — window management, rendering, input, and audio — without hiding the mechanics underneath. Everything else is ours to design and build.</p>
+        <p>The goal is to ship a complete, polished game while truly understanding every system in it. This project is as much about mastering C++ and game architecture as it is about putting something finished out into the world.</p>
+        <p>The result is a game with an unusual level of intentionality behind every mechanic. When you play Protocol, you're playing something built by a developer who understands exactly why every system works the way it does.</p>
+      </div>
+
+      <div class="screenshots fade-in" data-delay="1">
+        <div class="section-label">Screenshots</div>
+        <div class="screenshot-grid">
+          <div class="screenshot-main">
+            <div class="screenshot-placeholder">
+              <svg width="56" height="56" viewBox="0 0 64 64" fill="none"><rect x="4" y="4" width="56" height="56" stroke="#2a2a2a" stroke-width="1"/><line x1="4" y1="4" x2="60" y2="60" stroke="#2a2a2a" stroke-width="0.8"/><line x1="60" y1="4" x2="4" y2="60" stroke="#2a2a2a" stroke-width="0.8"/><circle cx="32" cy="32" r="10" stroke="#2a2a2a" stroke-width="1"/></svg>
+              <span>Screenshot Coming Soon</span>
+            </div>
+          </div>
+          <div class="screenshot-side">
+            <div class="screenshot-placeholder small">
+              <svg width="36" height="36" viewBox="0 0 64 64" fill="none"><rect x="4" y="4" width="56" height="56" stroke="#2a2a2a" stroke-width="1"/><line x1="4" y1="4" x2="60" y2="60" stroke="#2a2a2a" stroke-width="0.8"/></svg>
+              <span>In-game</span>
+            </div>
+            <div class="screenshot-placeholder small">
+              <svg width="36" height="36" viewBox="0 0 64 64" fill="none"><rect x="4" y="4" width="56" height="56" stroke="#2a2a2a" stroke-width="1"/><line x1="60" y1="4" x2="4" y2="60" stroke="#2a2a2a" stroke-width="0.8"/></svg>
+              <span>Environment</span>
+            </div>
+            <div class="screenshot-placeholder small">
+              <svg width="36" height="36" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="1"/><circle cx="32" cy="32" r="10" stroke="#2a2a2a" stroke-width="0.8"/></svg>
+              <span>Gameplay</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opensource fade-in" data-delay="1">
+        <div class="section-label">Open Source</div>
+        <div class="opensource-banner">
+          <div class="opensource-icon">
+            <svg width="34" height="34" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="#c8ff00" stroke-width="1.2"/><circle cx="18" cy="18" r="7" stroke="#c8ff00" stroke-width="1.2"/><line x1="18" y1="2" x2="18" y2="11" stroke="#c8ff00" stroke-width="1.2"/><line x1="25.5" y1="27" x2="21" y2="23.5" stroke="#c8ff00" stroke-width="1.2"/><line x1="10.5" y1="27" x2="15" y2="23.5" stroke="#c8ff00" stroke-width="1.2"/></svg>
+          </div>
+          <div>
+            <div class="opensource-title">Protocol is fully open source</div>
+            <div class="opensource-body">Every line of Protocol is publicly available on GitHub. Follow along as the game gets built commit by commit — read the code, watch the architecture evolve, and see exactly how a game is constructed from nothing. No secrets, no black boxes.</div>
+          </div>
+        </div>
+        <div class="opensource-perks">
+          <div class="opensource-perk"><div class="perk-icon">&#9670;</div><div><div class="perk-title">Track every commit</div><div class="perk-body">Watch real development happen in real time. Every feature, every fix, every refactor is visible in the public repo.</div></div></div>
+          <div class="opensource-perk"><div class="perk-icon">&#9670;</div><div><div class="perk-title">Learn from the code</div><div class="perk-body">If you're learning C++ or game development with RayLib, this codebase is a living resource — a real game being built in the open.</div></div></div>
+          <div class="opensource-perk"><div class="perk-icon">&#9670;</div><div><div class="perk-title">Report issues &amp; contribute</div><div class="perk-body">Found a bug or have a suggestion? Open an issue on GitHub. The community is part of the development process.</div></div></div>
+        </div>
+        <a href="https://github.com/alexbriggs08/Protocol" target="_blank" rel="noopener" class="github-cta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          View on GitHub &rarr;
+        </a>
+      </div>
+
+      <div class="features fade-in" data-delay="2">
+        <div class="section-label">Core Systems</div>
+        <div class="features-grid">
+          <div class="feature-item"><div class="feature-num">SYS / 01</div><div class="feature-title">Rendering Pipeline</div><div class="feature-body">RayLib-powered rendering with custom layering, camera control, and scene management built on top.</div></div>
+          <div class="feature-item"><div class="feature-num">SYS / 02</div><div class="feature-title">Physics &amp; Collision</div><div class="feature-body">Custom collision logic and physics response layered over RayLib's primitives for precise, game-specific behaviour.</div></div>
+          <div class="feature-item"><div class="feature-num">SYS / 03</div><div class="feature-title">Entity System</div><div class="feature-body">Hand-written entity-component architecture keeping game objects modular, composable, and easy to reason about.</div></div>
+          <div class="feature-item"><div class="feature-num">SYS / 04</div><div class="feature-title">Input Manager</div><div class="feature-body">Unified input abstraction on top of RayLib — keyboard, mouse, and gamepad mapped to clean game actions.</div></div>
+          <div class="feature-item"><div class="feature-num">SYS / 05</div><div class="feature-title">Audio System</div><div class="feature-body">Layered audio management via RayLib's audio module — spatial sound, dynamic mixing, and event-driven playback.</div></div>
+          <div class="feature-item"><div class="feature-num">SYS / 06</div><div class="feature-title">State Manager</div><div class="feature-body">Stack-based state machine controlling scenes, menus, and transitions — clean separation between game phases.</div></div>
+        </div>
+      </div>
+
+      <div class="devlog fade-in" data-delay="2">
+        <div class="section-label">Dev Log</div>
+        <div class="devlog-entries">
+          <div class="devlog-entry"><div class="devlog-date">2025 — Entry 001</div><div><div class="devlog-title">Project start — setting up the build system</div><div class="devlog-body">First commit. Got a window opening and a basic game loop running with RayLib. Build system wired up, project structure locked in.</div></div></div>
+          <div class="devlog-entry"><div class="devlog-date">2025 — Entry 002</div><div><div class="devlog-title">First geometry on screen</div><div class="devlog-body">RayLib rendering pipeline up and running. Started wiring the entity system — first game objects appearing in world space.</div></div></div>
+          <div class="devlog-entry"><div class="devlog-date">TBD — Entry 003</div><div><div class="devlog-title">More updates coming</div><div class="devlog-body">This log will grow as development continues. Check back for progress updates.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar" data-delay="1">
+      <div class="sidebar-item"><div class="sidebar-label">Source Code</div><div class="sidebar-value accent">Public on GitHub</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">License</div><div class="sidebar-value">Open Source</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Status</div><div class="sidebar-value accent">In Development</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Engine</div><div class="sidebar-value">RayLib</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Language</div><div class="sidebar-value">C++</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Platform</div><div class="sidebar-value">PC</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Genre</div><div class="sidebar-value">TBD</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Studio</div><div class="sidebar-value">Wireframe Studios</div></div>
+      <div class="sidebar-item"><div class="sidebar-label">Release</div><div class="sidebar-value">TBD</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Wireframe Studios &mdash; Est. 2025</div>
+  <div class="footer-copy">&copy; 2025 Wireframe Studios. All rights reserved.</div>
+</footer>
+
+<script>
+  (function () {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    const label = document.getElementById('cursor-label');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    const LERP_DEFAULT = 0.15;
+    dot.style.opacity = '0'; ring.style.opacity = '0';
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.opacity = '1'; ring.style.opacity = '1'; });
+    (function loop() {
+      requestAnimationFrame(loop);
+      dot.style.transform = `translate(${mx - 2.5}px, ${my - 2.5}px)`;
+      const LERP = window.__cursorLerp || LERP_DEFAULT;
+      rx += (mx - rx) * LERP; ry += (my - ry) * LERP;
+      const rSize = parseInt(getComputedStyle(ring).width) / 2;
+      ring.style.transform = `translate(${rx - rSize}px, ${ry - rSize}px)`;
+      label.style.transform = `translate(${rx + 20}px, ${ry - 16}px)`;
+    })();
+    document.querySelectorAll('a, button').forEach(el => {
+      const tip = el.dataset.cursor || el.getAttribute('aria-label') || '';
+      el.addEventListener('mouseenter', () => { document.body.classList.add('cursor-hover'); if (tip) label.textContent = tip; });
+      el.addEventListener('mouseleave', () => { document.body.classList.remove('cursor-hover'); label.textContent = ''; });
+    });
+    document.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-text'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-text'));
+    });
+    document.addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
+    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-down'));
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+  })();
+
+  const observer = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.1});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+<script src="transition.js"></script>
+</body>
+</html>
